@@ -1,10 +1,10 @@
 <template>
   <div class="content-wrap">
     <nav-bar />
-    football
-    <!-- <GameWrap class="pt-[44px]" />
 
-    <fixed-ad /> -->
+    <GameWrap class="pt-[44px]" />
+
+    <fixed-ad />
   </div>
 </template>
 

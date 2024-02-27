@@ -1,8 +1,8 @@
 <template>
   <div class="content-wrap">
-    <nav-bar />
+    <!-- <nav-bar /> -->
 
-    <GameWrap class="pt-[44px]" />
+    <GameWrap />
 
     <fixed-ad />
   </div>
@@ -10,8 +10,10 @@
 
 <script setup name="">
 import NavBar from "@/components/NavBar/index.vue";
-import GameWrap from "@/components/Competition/gameWrap.vue";
 import FixedAd from "@/components/FixedAd/index.vue";
+import GameWrap from "@/components/Competition/gameWrap.vue";
+
+import { reactive } from "vue";
 </script>
 
 <style lang="less" scope>

@@ -10,12 +10,12 @@
         <div class="pt-[20px] pl-[18px] flex flex-wrap rounded-[20px]">
           <div
             class="s-item mr-[20px] mb-[10px]"
-            :class="{ 'active-item': index === indexValue }"
-            v-for="(item, index) in options"
+            :class="{ 'active-item': index === activeIndex }"
+            v-for="(item, index) in tabsData"
             :key="index"
-            @click="onConfirm(item)"
+            @click="onConfirm(item, index)"
           >
-            {{ item.text }}
+            {{ item.shortNameZh }}
           </div>
         </div>
       </van-dropdown-item>
@@ -26,9 +26,18 @@
 <script setup>
 import { ref } from "vue";
 
+const props = defineProps({
+  tabsData: {
+    type: Array,
+    default: () => []
+  },
+  activeIndex: {
+    type: Number,
+    default: 0
+  }
+});
 const menuRef = ref(null);
 const itemRef = ref(null);
-const indexValue = ref(0);
 const options = [
   { text: "热门", value: 0 },
   { text: "篮球", value: 1 },
@@ -70,11 +79,11 @@ const options = [
   { text: "偶记", value: 2 }
 ];
 
-const emit = defineEmits(["changeOpen"]);
+const emit = defineEmits(["changeOpen", "changeActiveIndex"]);
 
-const onConfirm = item => {
-  console.log("onConfirm", item);
+const onConfirm = (item, index) => {
   itemRef.value.toggle();
+  emit("changeActiveIndex", index);
 };
 
 const openDropdown = () => {
@@ -122,29 +131,29 @@ const closeDropdown = () => {
   padding: 4px 18px;
 }
 
-.s-item:nth-child(5) {
-  margin-left: 30px;
-}
-.s-item:nth-child(13) {
-  margin-left: 30px;
-}
+// .s-item:nth-child(5) {
+//   margin-left: 30px;
+// }
+// .s-item:nth-child(13) {
+//   margin-left: 10px;
+// }
 
-.s-item:nth-child(21) {
-  margin-left: 30px;
-}
+// .s-item:nth-child(21) {
+//   margin-left: 30px;
+// }
 
-.s-item:nth-child(29) {
-  margin-left: 30px;
-}
-.s-item:nth-child(37) {
-  margin-left: 30px;
-}
-.s-item:nth-child(45) {
-  margin-left: 30px;
-}
-.s-item:nth-child(53) {
-  margin-left: 30px;
-}
+// .s-item:nth-child(29) {
+//   margin-left: 30px;
+// }
+// .s-item:nth-child(37) {
+//   margin-left: 30px;
+// }
+// .s-item:nth-child(45) {
+//   margin-left: 30px;
+// }
+// .s-item:nth-child(53) {
+//   margin-left: 30px;
+// }
 
 .active-item {
   background: linear-gradient(180deg, #82dddc 0%, #34cecc 100%);

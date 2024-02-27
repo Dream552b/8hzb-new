@@ -1,10 +1,10 @@
 <template>
   <div class="content-wrap">
     <nav-bar />
-    competition-results
-    <!-- <GameWrap class="pt-[44px]" />
 
-    <fixed-ad /> -->
+    <GameWrap class="pt-[44px]" />
+
+    <fixed-ad />
   </div>
 </template>
 

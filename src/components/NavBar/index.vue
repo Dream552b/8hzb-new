@@ -1,12 +1,35 @@
 <template>
   <div class="content-wrap flex items-center px-[18px] fixed z-[100]">
-    <img class="w-[74px] h-[26px]" alt="logo" src="@/assets/img-logo.png" />
-    <CategorySelection @changeOpen="changeOpen" />
+    <!-- <img
+      class="w-[375px] h-[90px] absolute left-[0px] top-[0px] z-[-1]"
+      src="@/assets/bg-top.png"
+      alt=""
+    /> -->
 
-    <van-tabs v-model:active="active" class="tabs-wrap pl-[4px]" color="#fff">
+    <img
+      class="w-[74px] h-[26px]"
+      alt="logo"
+      src="@/assets/img-logo.png"
+      @click="getMenuList"
+    />
+    <CategorySelection
+      @changeOpen="changeOpen"
+      @changeActiveIndex="changeActiveIndex"
+      :tabsData="tabsData"
+      :activeIndex="activeIndex"
+    />
+
+    <van-tabs
+      ref="tabsRef"
+      v-model:active="activeIndex"
+      @click-tab="onClickTab"
+      class="tabs-wrap pl-[4px]"
+      background="f3ffff"
+      color="#f3ffff"
+    >
       <van-tab
         v-for="(item, index) in tabsData"
-        :title="item.title"
+        :title="item.shortNameZh"
         :key="index"
       >
       </van-tab>
@@ -28,58 +51,124 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, getCurrentInstance, onMounted, watch } from "vue";
 import { useDarkMode, useToggleDarkMode } from "@/hooks/useToggleDarkMode";
 import CategorySelection from "@/components/CategorySelection/index.vue";
+import { getHotCompetitionList } from "@/api/game";
+
+import { showFailToast, showSuccessToast, showToast } from "vant";
+import "vant/es/toast/style";
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
+const route = useRoute();
+
+const { proxy } = getCurrentInstance();
+
+const props = defineProps({});
+
+const emit = defineEmits(["refreshListData"]);
 
 const isOpen = ref(false);
-
-const tabsData = reactive([
+const tabsRef = ref(null);
+const baseTabs = [
   {
-    title: "热门",
-    to: {
-      name: "Home"
-    }
+    shortNameZh: "热门",
+    path: "/home"
   },
   {
-    title: "篮球",
-    to: {
-      name: "Basketball"
-    }
+    shortNameZh: "篮球",
+    path: "/basketball"
   },
   {
-    title: "足球",
-    to: {
-      name: "Football"
-    }
+    shortNameZh: "足球",
+    path: "/football"
   },
   {
-    title: "赛果",
-    to: {
-      name: "CompetitionResults"
-    }
+    shortNameZh: "赛果",
+    path: "/competition-results"
   },
   {
-    icon: "icon-my",
-    title: "回放",
-    to: {
-      name: "My"
-    }
-  },
-  {
-    title: "法甲"
-  },
-  {
-    title: "NBA"
-  },
-  {
-    title: "CBA"
+    shortNameZh: "回放",
+    path: "/home",
+    rests: 1 // 其他
   }
-]);
+];
+let tabsData = ref([]);
+
+const activeIndex = ref(0);
+const activeIndexTest = ref(0);
 
 const changeOpen = isBoolean => {
   isOpen.value = isBoolean;
 };
+
+// 切换tabs
+const changeActiveIndex = activeIndex => {
+  tabsRef.value.scrollTo(activeIndex);
+
+  emit("refreshListData", tabsData.value[activeIndex]);
+};
+// 点击tabs
+const onClickTab = item => {
+  tabsRef.value.scrollTo(item.name);
+
+  // 白名单tabbar切换
+  let whiteList = baseTabs.slice(0, baseTabs.length - 1);
+
+  let isFindData = whiteList.find(
+    el => el.path === tabsData.value[item.name].path
+  );
+
+  if (tabsData.value[item.name].path) {
+    router.replace({
+      path: tabsData.value[item.name].path
+    });
+  }
+
+  //其他tab
+  if (tabsData.value[item.name].rests) {
+    console.log("tabsData.value[item.name]", tabsData.value[item.name]);
+
+    emit("refreshListData", tabsData.value[item.name]);
+  }
+};
+
+const getMenuList = async () => {
+  let isCacheTabs = proxy.$cache.session.getJSON("tabsData");
+  if (isCacheTabs) {
+    tabsData.value = isCacheTabs;
+    return;
+  }
+
+  const { data, code } = await getHotCompetitionList();
+  if (code !== 200) return;
+
+  if (data.length) {
+    data.map(item => {
+      item.path = "/home";
+      item.rests = 1;
+    });
+  }
+
+  tabsData.value = baseTabs.concat(data);
+  proxy.$cache.session.setJSON("tabsData", tabsData.value);
+};
+
+getMenuList();
+
+onMounted(() => {
+  watch(
+    () => route.path,
+    () => {
+      let tabIndex = tabsData.value.findIndex(item => item.path == route.path);
+
+      changeActiveIndex(tabIndex);
+    },
+    // 组件创建完后获取数据，
+    // 此时 data 已经被 observed 了
+    { immediate: true }
+  );
+});
 </script>
 
 <style lang="less" scoped>
@@ -98,6 +187,7 @@ const changeOpen = isBoolean => {
     :deep(.van-tab) {
       color: #000;
       height: 25px;
+      background: #fff;
     }
 
     :deep(.van-tab--active) {

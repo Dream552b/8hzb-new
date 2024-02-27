@@ -29,7 +29,7 @@ class Http {
   httpInterceptorsRequest() {
     Http.axiosInstance.interceptors.request.use(
       config => {
-        NProgress.start();
+        // NProgress.start();
         // 发送请求前，可在此携带 token
         // if (token) {
         //   config.headers['token'] = token
@@ -47,14 +47,14 @@ class Http {
   httpInterceptorsResponse() {
     Http.axiosInstance.interceptors.response.use(
       response => {
-        NProgress.done();
+        // NProgress.done();
         // 与后端协定的返回字段
-        const { code, message, result } = response.data;
+        const { code, message, data } = response.data;
         // 判断请求是否成功 （code 200 请求成功）
         const isSuccess =
-          result && Reflect.has(response.data, "code") && code === 200;
+          data && Reflect.has(response.data, "code") && code === 200;
         if (isSuccess) {
-          return result;
+          return response.data;
         } else {
           // 处理请求错误
           // showFailToast(message);

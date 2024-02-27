@@ -47,9 +47,25 @@ const routes = [
         meta: {
           title: "我的",
         }
-      }
+      },
+
     ]
-  }
+  },
+
+  {
+    path: "/race",
+    // component: Layout,
+    children: [
+      {
+        path: "racelist/:id",
+        name: "RaceList",
+        component: () => import("@/views/race-list/index.vue"),
+        meta: {
+          title: "自定义",
+        }
+      }
+    ],
+  },
 ];
 
 export default routes;

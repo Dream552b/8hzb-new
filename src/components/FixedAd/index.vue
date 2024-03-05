@@ -2,7 +2,7 @@
   <div
     class="fixed z-[90] flex flex-col items-center bottom-[100px] right-[26px]"
   >
-    <div>
+    <div @click="onDownload">
       <img class="w-[34px] h-[34px]" src="@/assets/icon-download.png" alt="" />
       <div
         class="text-[6px] text-center rounded-[10px] bg-[#333535] text-[#fff] px-[2px] my-[-6px]"
@@ -38,7 +38,18 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
+const route = useRoute();
+
+const onDownload = () => {
+  router.push({
+    path: `/adv/download-page/index`,
+    query: {}
+  });
+};
+</script>
 
 <style lang="less" scoped>
 .in-box {

@@ -83,7 +83,7 @@ const emit = defineEmits(["changeOpen", "changeActiveIndex"]);
 
 const onConfirm = (item, index) => {
   itemRef.value.toggle();
-  emit("changeActiveIndex", index);
+  emit("changeActiveIndex", { name: index });
 };
 
 const openDropdown = () => {

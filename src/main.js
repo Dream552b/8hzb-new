@@ -6,6 +6,7 @@ import "normalize.css/normalize.css";
 import "./styles/index.less";
 // tailwindcss
 import "./styles/tailwind.css";
+
 // svg icon
 import "virtual:svg-icons-register";
 

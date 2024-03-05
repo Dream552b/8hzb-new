@@ -12,9 +12,12 @@
       src="@/assets/img-logo.png"
       @click="getMenuList"
     />
+
+    <!-- {{ route.path }} -->
+
     <CategorySelection
       @changeOpen="changeOpen"
-      @changeActiveIndex="changeActiveIndex"
+      @changeActiveIndex="onClickTab"
       :tabsData="tabsData"
       :activeIndex="activeIndex"
     />
@@ -73,15 +76,17 @@ const tabsRef = ref(null);
 const baseTabs = [
   {
     shortNameZh: "热门",
+    rests: 1, // 其他
     path: "/home"
+  },
+
+  {
+    shortNameZh: "足球",
+    path: "/football"
   },
   {
     shortNameZh: "篮球",
     path: "/basketball"
-  },
-  {
-    shortNameZh: "足球",
-    path: "/football"
   },
   {
     shortNameZh: "赛果",
@@ -90,46 +95,58 @@ const baseTabs = [
   {
     shortNameZh: "回放",
     path: "/home",
-    rests: 1 // 其他
+    rests: 1, // 其他
+    sportsType: -2
   }
 ];
-let tabsData = ref([]);
 
-const activeIndex = ref(0);
+let tabsData = ref(proxy.$cache.session.getJSON("tabsData") || []);
+
+const activeIndex = ref(
+  tabsData.value.findIndex(item => item.path === route.path) || 0
+);
+
 const activeIndexTest = ref(0);
 
 const changeOpen = isBoolean => {
   isOpen.value = isBoolean;
 };
 
-// 切换tabs
-const changeActiveIndex = activeIndex => {
-  tabsRef.value.scrollTo(activeIndex);
-
-  emit("refreshListData", tabsData.value[activeIndex]);
-};
 // 点击tabs
 const onClickTab = item => {
-  tabsRef.value.scrollTo(item.name);
+  let index = item.name;
 
-  // 白名单tabbar切换
-  let whiteList = baseTabs.slice(0, baseTabs.length - 1);
+  tabsRef.value.scrollTo(index);
+  console.log("route", route.path);
 
-  let isFindData = whiteList.find(
-    el => el.path === tabsData.value[item.name].path
-  );
+  let isTime = false;
+  if (route.path !== "/home" && tabsData.value[index].path == "/home") {
+    isTime = true;
+  }
+  console.log("isTime", isTime);
 
-  if (tabsData.value[item.name].path) {
+  // 切换之前
+  if (tabsData.value[index].path) {
     router.replace({
-      path: tabsData.value[item.name].path
+      path: tabsData.value[index].path
     });
   }
 
-  //其他tab
-  if (tabsData.value[item.name].rests) {
-    console.log("tabsData.value[item.name]", tabsData.value[item.name]);
-
-    emit("refreshListData", tabsData.value[item.name]);
+  if (isTime) {
+    // 延时处理
+    setTimeout(() => {
+      //其他tab
+      if (tabsData.value[index].rests) {
+        console.log("tabsData.value[item.name]", tabsData.value[index]);
+        emit("refreshListData", tabsData.value[index]);
+      }
+    }, 150);
+  } else {
+    //其他tab
+    if (tabsData.value[index].rests) {
+      console.log("tabsData.value[item.name]", tabsData.value[index]);
+      emit("refreshListData", tabsData.value[index]);
+    }
   }
 };
 
@@ -156,19 +173,15 @@ const getMenuList = async () => {
 
 getMenuList();
 
-onMounted(() => {
-  watch(
-    () => route.path,
-    () => {
-      let tabIndex = tabsData.value.findIndex(item => item.path == route.path);
+watch(
+  () => route.path,
+  () => {
+    console.log("route.path---", route.path);
+  },
+  { immediate: true }
+);
 
-      changeActiveIndex(tabIndex);
-    },
-    // 组件创建完后获取数据，
-    // 此时 data 已经被 observed 了
-    { immediate: true }
-  );
-});
+defineExpose({ onClickTab });
 </script>
 
 <style lang="less" scoped>
@@ -178,6 +191,14 @@ onMounted(() => {
   background: #fff;
   .tabs-wrap {
     width: calc(100vw - 36px - 80px - 15px);
+    background: #fff;
+    .van-tabs__wrap {
+      background: #fff !important;
+    }
+
+    :deep(.van-tabs__wrap) {
+      background: #fff !important;
+    }
 
     :deep(.van-tabs__nav) {
       display: flex;

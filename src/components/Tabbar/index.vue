@@ -5,6 +5,8 @@
     :route="true"
     fixed
     active-color="#3ccac8"
+    inactive-color="#000"
+    @change="onChange"
   >
     <van-tabbar-item
       v-for="(item, index) in tabbarData"
@@ -22,6 +24,8 @@
 <script setup>
 import { ref, reactive } from "vue";
 
+const emit = defineEmits(["changeTab"]);
+
 const active = ref(0);
 const tabbarData = reactive([
   {
@@ -32,17 +36,17 @@ const tabbarData = reactive([
     }
   },
   {
-    icon: "icon-basketball",
-    title: "篮球",
-    to: {
-      name: "Basketball"
-    }
-  },
-  {
     icon: "icon-football",
     title: "足球",
     to: {
       name: "Football"
+    }
+  },
+  {
+    icon: "icon-basketball",
+    title: "篮球",
+    to: {
+      name: "Basketball"
     }
   },
   {
@@ -60,4 +64,8 @@ const tabbarData = reactive([
     }
   }
 ]);
+
+const onChange = tabbarIndex => {
+  emit("changeTab", tabbarIndex);
+};
 </script>

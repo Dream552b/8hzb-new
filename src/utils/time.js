@@ -44,10 +44,47 @@ export function parseTime(time, pattern) {
     return time_str
 }
 
-// 已过去了多少分钟
-export function getMinutesPassed(timestamp) {
+// 已过去了多少分钟  只用在足球
+export function getMinutesPassed(timeObj) {
     const currentTime = Math.floor(Date.now() / 1000); // 当前时间戳（单位：秒）
-    const timePassed = Math.floor((currentTime - timestamp) / 60); // 已经过去的分钟数
 
+    if (!timeObj.statusID) {
+        timeObj.statusID = timeObj.matchStatus
+    }
+    if (timeObj.statusID === 3) {
+        return '45'
+    }
+    let timePassed = Math.floor((currentTime - timeObj.liveTime) / 60); // 已经过去的分钟数
+
+    timePassed = timePassed + 1 //纳米计算公式
+
+
+    if (timeObj.statusID === 2) {
+        //上半场
+        timePassed = timePassed + 1
+        if (timePassed > 45) {
+            timePassed = 45
+        }
+    }
+    if (timeObj.statusID === 4) {
+        //下半场
+        timePassed = timePassed + 1 + 45//纳米计算公式
+
+    }
+
+    if (timePassed > 90) {
+        timePassed = 90
+    }
     return timePassed;
+}
+
+
+// 秒转分秒
+export function secondsToMinutesAndSeconds(seconds) {
+    let minutes = Math.floor(seconds / 60);
+    let remainingSeconds = seconds % 60;
+
+    minutes = minutes < 10 ? '0' + minutes : minutes
+    remainingSeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds
+    return minutes + ':' + remainingSeconds
 }

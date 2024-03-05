@@ -3,7 +3,7 @@ import { store } from "@/store";
 
 const darkModeKey = "__dark_mode__";
 const isDarkMode = () => {
-  const darkMode = window.localStorage.getItem(darkModeKey);
+  const darkMode = 'light';
   if (darkMode) {
     return darkMode === "true";
   } else {

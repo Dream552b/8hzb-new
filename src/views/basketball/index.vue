@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrap">
-    <nav-bar />
+    <!-- <nav-bar /> -->
 
     <GameWrap class="pt-[44px]" />
 

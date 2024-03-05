@@ -4,10 +4,13 @@ import NavBar from "@/components/NavBar/index.vue";
 
 import { useDarkMode } from "@/hooks/useToggleDarkMode";
 import { useCachedViewStoreHook } from "@/store/modules/cachedView";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
+
+const navbarRef = ref(null);
+const childComponentRef = ref(null);
 
 const cachedViews = computed(() => {
   return useCachedViewStoreHook().cachedViewList;
@@ -20,19 +23,36 @@ const showNavPath = [
   "/football",
   "/competition-results"
 ];
+
+const changeTab = tabbarIndex => {
+  navbarRef.value.onClickTab({ name: tabbarIndex });
+};
+
+// 热门页面 其他tab的刷新列表方法
+const refreshListData = tabObj => {
+  if (!childComponentRef.value.refreshListData) return;
+  childComponentRef.value?.refreshListData(tabObj);
+};
 </script>
 
 <template>
   <div class="app-wrapper">
-    <van-config-provider :theme="useDarkMode() ? 'dark' : 'light'">
-      <!-- <nav-bar v-if="showNavPath.filter(item => item === route.path)" /> -->
-
+    <van-config-provider :theme="useDarkMode() ? 'light' : 'light'">
       <router-view v-slot="{ Component }" class="view-wrap">
         <keep-alive :include="cachedViews">
-          <component :is="Component" />
+          <div>
+            <nav-bar
+              ref="navbarRef"
+              v-show="showNavPath.find(item => item === route.path)"
+              @refreshListData="refreshListData"
+            />
+
+            <component :is="Component" ref="childComponentRef" />
+          </div>
         </keep-alive>
       </router-view>
-      <tabbar />
+
+      <tabbar @changeTab="changeTab" />
     </van-config-provider>
   </div>
 </template>

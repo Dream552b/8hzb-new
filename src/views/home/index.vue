@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrap">
-    <nav-bar @refreshListData="refreshListData" />
+    <!-- <nav-bar @refreshListData="refreshListData" /> -->
 
     <GameWrap class="pt-[44px]" ref="childComponentRef" />
 
@@ -18,8 +18,12 @@ import { reactive, ref } from "vue";
 const childComponentRef = ref(null);
 
 const refreshListData = tabObj => {
+  console.log("来了么1111");
+
   childComponentRef.value?.refreshListData(tabObj);
 };
+
+defineExpose({ refreshListData });
 </script>
 
 <style lang="less" scope>

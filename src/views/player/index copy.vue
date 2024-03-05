@@ -45,7 +45,6 @@
             />
             <div
               class="flex-1 flex items-center justify-center text-[14px] font-bold mx-[10px]"
-              v-if="matchInfo.homeScores"
             >
               <span> {{ matchInfo.homeScores[0] }}</span>
               <span class="mx-[2px]">-</span>
@@ -236,7 +235,7 @@ const onObjDisScore = dataObj => {
   return dataObj;
 };
 
-handlanGetMatchInfo();
+// handlanGetMatchInfo();
 
 onMounted(() => {});
 </script>

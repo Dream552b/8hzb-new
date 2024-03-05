@@ -13,7 +13,8 @@ const routes = [
         name: "Home",
         component: Home,
         meta: {
-          title: "热门"
+          title: "热门",
+          noCache: true
         }
       },
       {
@@ -21,7 +22,9 @@ const routes = [
         name: "Basketball",
         component: () => import("@/views/basketball/index.vue"),
         meta: {
-          title: "篮球"
+          title: "篮球",
+          noCache: true
+
         }
       },
       {
@@ -30,6 +33,8 @@ const routes = [
         component: () => import("@/views/football/index.vue"),
         meta: {
           title: "足球",
+          noCache: true
+
         }
       },
       {
@@ -38,6 +43,8 @@ const routes = [
         component: () => import("@/views/competition-results/index.vue"),
         meta: {
           title: "赛果",
+          noCache: true
+
         }
       },
       {
@@ -46,6 +53,7 @@ const routes = [
         component: () => import("@/views/my/index.vue"),
         meta: {
           title: "我的",
+          noCache: true
         }
       },
 
@@ -62,6 +70,33 @@ const routes = [
         component: () => import("@/views/race-list/index.vue"),
         meta: {
           title: "自定义",
+        }
+      }
+    ],
+  },
+  {
+    path: "/details",
+    // component: Layout,
+    children: [
+      {
+        path: "player/index",
+        name: "PlayerDetails",
+        component: () => import("@/views/player/index.vue"),
+        meta: {
+          title: "详情",
+        }
+      }
+    ],
+  },
+  {
+    path: "/adv",
+    children: [
+      {
+        path: "download-page/index",
+        name: "DownloadPage",
+        component: () => import("@/views/download-page/index.vue"),
+        meta: {
+          title: "8号直播",
         }
       }
     ],

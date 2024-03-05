@@ -12,6 +12,7 @@ export const useCachedViewStore = defineStore({
       // 不重复添加
       if (this.cachedViewList.includes(view.name)) return;
       if (!view?.meta?.noCache) {
+
         this.cachedViewList.push(view.name);
       }
     },

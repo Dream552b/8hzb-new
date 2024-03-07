@@ -103,7 +103,9 @@ const baseTabs = [
 let tabsData = ref(proxy.$cache.session.getJSON("tabsData") || []);
 
 const activeIndex = ref(
-  tabsData.value.findIndex(item => item.path === route.path) || 0
+  tabsData.value.findIndex(item => item.path === route.path) ||
+    proxy.$cache.session.getJSON("tabsIndex") ||
+    0
 );
 
 const activeIndexTest = ref(0);
@@ -117,6 +119,8 @@ const onClickTab = item => {
   let index = item.name;
 
   tabsRef.value.scrollTo(index);
+  proxy.$cache.session.setJSON("tabsIndex", index);
+
   console.log("route", route.path);
 
   let isTime = false;

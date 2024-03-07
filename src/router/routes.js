@@ -9,7 +9,7 @@ const routes = [
     redirect: { name: "Home" },
     children: [
       {
-        path: "home",
+        path: "/",
         name: "Home",
         component: Home,
         meta: {
@@ -75,12 +75,12 @@ const routes = [
     ],
   },
   {
-    path: "/details",
+    path: "/",
     // component: Layout,
     children: [
       {
-        path: "player/index",
-        name: "PlayerDetails",
+        path: '/live/:sportsType/:matchID',
+        name: "Live",
         component: () => import("@/views/player/index.vue"),
         meta: {
           title: "详情",
@@ -97,6 +97,19 @@ const routes = [
         component: () => import("@/views/download-page/index.vue"),
         meta: {
           title: "8号直播",
+        }
+      }
+    ],
+  },
+  {
+    path: "/",
+    children: [
+      {
+        path: "login/index",
+        name: "Login",
+        component: () => import("@/views/login/index.vue"),
+        meta: {
+          title: "登录",
         }
       }
     ],

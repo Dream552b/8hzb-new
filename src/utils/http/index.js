@@ -59,7 +59,8 @@ class Http {
           // 处理请求错误
           // showFailToast(message);
           console.log(message);
-          return Promise.reject(response.data);
+          return response.data;
+          // return Promise.reject(response.data);
         }
       },
       error => {

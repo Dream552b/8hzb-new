@@ -58,7 +58,22 @@
               v-for="(item, index) in topArrayData"
               :key="index"
             >
-              <GameItem
+              <!-- <GameItem
+                :gameItem="item"
+                @matchObjects="matchObjects"
+                @refreshTopData="refreshTopData"
+                dataOrgin="topKey"
+              /> -->
+              <footballItem
+                :gameItem="item"
+                @matchObjects="matchObjects"
+                @refreshTopData="refreshTopData"
+                dataOrgin="topKey"
+                v-if="item.sportsType === 1"
+              />
+
+              <basketballItem
+                v-else
                 :gameItem="item"
                 @matchObjects="matchObjects"
                 @refreshTopData="refreshTopData"
@@ -78,7 +93,22 @@
 
                 <div v-for="(item, index) in timeEl" :key="index">
                   <van-cell class="card-box mb-[10px]">
-                    <GameItem
+                    <!-- <GameItem
+                      :gameItem="item"
+                      @matchObjects="matchObjects"
+                      :dataOrgin="key"
+                      v-if="item.sportsType === 1"
+                    /> -->
+
+                    <footballItem
+                      :gameItem="item"
+                      @matchObjects="matchObjects"
+                      :dataOrgin="key"
+                      v-if="item.sportsType === 1"
+                    />
+
+                    <basketballItem
+                      v-else
                       :gameItem="item"
                       @matchObjects="matchObjects"
                       :dataOrgin="key"
@@ -116,6 +146,9 @@ import {
 } from "vue";
 
 import GameItem from "@/components/Competition/gameItem.vue";
+import basketballItem from "@/components/Competition/basketball-item.vue";
+import footballItem from "@/components/Competition/football-item.vue";
+
 import TitleText from "@/components/TitleText/index.vue";
 import bgEmpty from "../../assets/bg-empty.png";
 import iconLoading from "../../assets/icon-loading.gif";
@@ -183,7 +216,9 @@ const onLoad = () => {
 
 // 下拉刷新
 const onRefresh = () => {
-  // if (loading.value) return;
+  if (loading.value) return;
+  console.log("loading.value", loading.value);
+
   console.log("下拉刷新");
   refreshing.value = true;
 
@@ -197,24 +232,9 @@ const onRefresh = () => {
 
   setTimeout(() => {
     if (refreshing.value) {
-      // refreshing.value = false;
-
-      // onLoad();
-
       onGetMatchList();
     }
   }, 100);
-
-  return;
-  nextTick(() => {
-    if (refreshing.value) {
-      refreshing.value = false;
-
-      // onLoad();
-
-      onGetMatchList();
-    }
-  });
 };
 
 // 重置数据
@@ -243,12 +263,14 @@ const onGetMatchList = async () => {
     finishedText.value = "";
     finished.value = true;
     isEmpty.value = true;
+
     return;
   }
 
   // 是否没有更多了
   if (!data.records) {
     finished.value = true;
+    finishedText.value = "没有更多了";
     return;
   }
 
@@ -264,20 +286,13 @@ const onGetMatchList = async () => {
 
   list.value.push(...data.records);
   copyList.value = JSON.parse(JSON.stringify(list.value));
-
-  // 是否没有更多了
-  if (!data.records || data.records.length < queryParams.value.limit) {
-    finished.value = true;
-    finishedText.value = "没有更多了";
-    return;
-  }
 };
-
-// onGetMatchList();
 
 // 处理比分
 const onDisScore = dataList => {
   dataList.map(item => {
+    item.huifang_type = queryParams.value.type;
+
     if (item.sportsType === 2) {
       const sum = item.awayScores.reduce((acc, val) => acc + val, 0);
       const sumHome = item.homeScores.reduce((acc, val) => acc + val, 0);

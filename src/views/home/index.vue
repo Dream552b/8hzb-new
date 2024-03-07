@@ -18,8 +18,6 @@ import { reactive, ref } from "vue";
 const childComponentRef = ref(null);
 
 const refreshListData = tabObj => {
-  console.log("来了么1111");
-
   childComponentRef.value?.refreshListData(tabObj);
 };
 

@@ -6,19 +6,6 @@
         <div class="flex items-center font-bold">
           <img
             class="w-[14px] h-[14px]"
-            v-show="gameItem.sportsType === 1"
-            src="@/assets/img-zuqiu.png"
-            alt=""
-            :class="{
-              rotate: FOOTBALL_STYLE_STATUS_ARR.find(
-                s => s === gameItem.statusID
-              )
-            }"
-          />
-
-          <img
-            class="w-[14px] h-[14px]"
-            v-show="gameItem.sportsType === 2"
             src="@/assets/img-lanqiu.png"
             alt=""
             :class="{
@@ -34,39 +21,6 @@
         </div>
 
         <div
-          class="text-[12px] flex items-center font-bold text-[#999999] leading-[14px]"
-          :class="{
-            liveActive: FOOTBALL_STYLE_STATUS_ARR.find(
-              s => s === gameItem.statusID
-            )
-          }"
-          v-if="gameItem.sportsType === 1"
-        >
-          <img
-            class="w-[14px] h-[14px]"
-            v-if="
-              gameItem.hotCompetition &&
-              FOOTBALL_STYLE_STATUS_ARR.find(s => s === gameItem.statusID)
-            "
-            src="@/assets/img-huo.gif"
-            alt=""
-          />
-
-          <span class="mx-[4px]">{{ FOOTBALL_TYPE[gameItem.statusID] }}</span>
-
-          <span v-if="gameItem.liveTime || gameItem.statusID === 3">
-            {{ getMinutesPassed(gameItem)
-            }}{{
-              getMinutesPassed(gameItem) === 46 ||
-              getMinutesPassed(gameItem) === 90
-                ? "+"
-                : ""
-            }}<span>'</span>
-          </span>
-        </div>
-
-        <div
-          v-else
           class="text-[12px] flex items-center text-center font-bold text-[#999999] leading-[14px]"
           :class="{
             liveActive: BASKETBALLSTYLE_STATUS_ARR.find(
@@ -101,11 +55,7 @@
           <div class="min-w-[70px]" v-if="!gameItem.anchorName">
             <div
               class="flex justify-end font-bold text-[#58C6C6] leading-[14px]"
-              v-if="
-                gameItem.sportsType === 1
-                  ? F_LIVE_STATUS.find(s => s === gameItem.statusID)
-                  : B_LIVE_STATUS.find(s => s === gameItem.statusID)
-              "
+              v-if="B_LIVE_STATUS.find(s => s === gameItem.statusID)"
             >
               <img
                 class="w-[14px] h-[14px] mr-[4px]"
@@ -119,11 +69,7 @@
           <div class="min-w-[70px]" v-if="gameItem.anchorName">
             <div
               class="flex justify-end font-bold text-[#58C6C6] leading-[14px]"
-              v-if="
-                gameItem.sportsType === 1
-                  ? F_LIVE_STATUS.find(s => s === gameItem.statusID)
-                  : B_LIVE_STATUS.find(s => s === gameItem.statusID)
-              "
+              v-if="B_LIVE_STATUS.find(s => s === gameItem.statusID)"
             >
               <img
                 class="w-[14px] h-[14px] mr-[4px]"
@@ -139,87 +85,9 @@
       <div class="line h-[0.4px] my-[10px]"></div>
 
       <!-- center part -->
-      <!-- 足球 -->
-      <div
-        class="flex items-center justify-center"
-        v-if="gameItem.sportsType === 1"
-      >
-        <div
-          class="flex items-center justify-end min-w-[120px] text-[12px] font-bold"
-        >
-          <span
-            class="bg-[#FAEE00] h-[13px] text-center px-[2px] ml-[5px] rounded-[1px] text-[10px] font-[400] leading-[14px]"
-            v-if="gameItem.homeScores[3]"
-          >
-            {{ gameItem.homeScores[3] }}
-          </span>
-          <span
-            class="bg-[#FF5858] h-[13px] px-[2px] rounded-[1px] ml-[5px] text-[10px] font-[400] leading-[14px]"
-            v-if="gameItem.homeScores[2]"
-          >
-            {{ gameItem.homeScores[2] }}
-          </span>
 
-          <span
-            class="van-ellipsis max-w-[74px] text-rigth ml-[5px]"
-            :class="{ activeBg: gameItem.home_bgActive }"
-          >
-            {{ gameItem.homeTeamName }}</span
-          >
-          <img
-            class="w-[14px] h-[14px] ml-[6px]"
-            :src="gameItem.homeTeamLogo"
-            v-if="gameItem.homeTeamLogo"
-            alt=""
-          />
-        </div>
-
-        <div class="text-[14px] font-bold text-center mx-[10px]">
-          <span v-if="gameItem.statusID === 1">VS</span>
-          <span
-            v-else
-            :class="{ blink: gameItem.away_bgActive || gameItem.home_bgActive }"
-          >
-            {{ gameItem.homeScores[0] }}
-            -
-            {{ gameItem.awayScores[0] }}
-          </span>
-        </div>
-
-        <div
-          class="flex items-center text-[12px] font-bold leading-[16px] min-w-[120px]"
-        >
-          <img
-            class="w-[14px] h-[14px] mr-[6px]"
-            v-if="gameItem.awayTeamLogo"
-            :src="gameItem.awayTeamLogo"
-            alt=""
-          />
-          <span
-            class="van-ellipsis max-w-[74px] text-left"
-            :class="{ activeBg: gameItem.away_bgActive }"
-            >{{ gameItem.awayTeamName }}</span
-          >
-
-          <span
-            class="bg-[#FAEE00] h-[13px] text-center px-[2px] ml-[5px] rounded-[1px] text-[10px] font-[400] leading-[14px]"
-            v-if="gameItem.awayScores[3]"
-          >
-            {{ gameItem.awayScores[3] }}
-          </span>
-          <span
-            class="bg-[#FF5858] h-[13px] px-[2px] rounded-[1px] ml-[5px] text-[10px] font-[400] leading-[14px]"
-            v-if="gameItem.awayScores[2]"
-          >
-            {{ gameItem.awayScores[2] }}
-          </span>
-        </div>
-      </div>
       <!-- 篮球 -->
-      <div
-        class="flex items-center justify-center"
-        v-if="gameItem.sportsType === 2"
-      >
+      <div class="flex items-center justify-center">
         <div
           class="flex items-center justify-end min-w-[120px] text-[12px] font-bold"
         >
@@ -272,10 +140,7 @@
           class="flex items-center justify-end min-w-[100px]"
           :class="{ blink: gameItem.asia_zhiActive }"
         >
-          <span v-if="gameItem.sportsType === 1">
-            {{ gameItem.asia.split(",").slice(0, 3).join(" ") }}
-          </span>
-          <span v-else>
+          <span>
             {{
               gameItem.statusID !== 9
                 ? gameItem.awayScores
@@ -289,22 +154,7 @@
         </div>
 
         <div class="mx-[14px] min-w-[40px]">
-          <div v-if="gameItem.sportsType === 1">
-            <span>
-              半:
-              <span :class="{ blink: gameItem.asia_zhiActive }"
-                >{{ gameItem.homeScores[1] }}-{{ gameItem.awayScores[1] }}
-              </span>
-            </span>
-
-            <span class="ml-[4px]">
-              角:
-              <span :class="{ blink: gameItem.bs_zhiActive }">
-                {{ gameItem.homeScores[4] }}-{{ gameItem.awayScores[4] }}
-              </span>
-            </span>
-          </div>
-          <div v-if="gameItem.sportsType === 2">
+          <div>
             <span>
               让:
               <span :class="{ blink: gameItem.asia_zhiActive }">{{
@@ -324,10 +174,7 @@
           class="flex items-center min-w-[100px]"
           :class="{ blink: gameItem.bs_zhiActive }"
         >
-          <span v-if="gameItem.sportsType === 1">
-            {{ gameItem.bs.split(",").slice(0, 3).join(" ") }}
-          </span>
-          <span v-else>
+          <span>
             {{
               gameItem.statusID !== 9
                 ? gameItem.homeScores
@@ -427,11 +274,7 @@ const onClikeTopClose = item => {
 
 const onToDetails = item => {
   router.push({
-    path: `/details/player/index`,
-    query: {
-      sportsType: item.sportsType,
-      matchID: item.id
-    }
+    path: `/live/${item.sportsType}/${item.id}`
   });
 };
 </script>

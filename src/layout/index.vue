@@ -18,7 +18,7 @@ const cachedViews = computed(() => {
 
 const showNavPath = [
   // 显示nav白名单
-  "/home",
+  "/",
   "/basketball",
   "/football",
   "/competition-results"

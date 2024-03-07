@@ -4,20 +4,51 @@
     class="relative w-full h-[234px] bg-[#000] truncate"
     @click="onClikeVideo"
   >
-    <img
+    <!-- <img
       class="w-[125px] h-[30px] z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
       src="@/assets/img-video-logo.png"
       alt=""
       @click="onIsPlay"
-    />
+    /> -->
+
+    <!-- 暂停 播放按钮 -->
+    <div
+      class="play-btn w-[50px] h-[40px] flex justify-center items-center rounded-[6px] z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
+      v-show="isShowBox"
+      @click.stop="onIsPlay"
+    >
+      <svg-icon
+        class="text-[#fff] text-[20px]"
+        name="icon-play"
+        v-show="!playing"
+      />
+
+      <svg-icon
+        v-show="playing"
+        class="text-[#fff] text-[20px]"
+        name="icon-stop-play"
+      />
+    </div>
+    <div
+      class="flex justify-center items-center rounded-[6px] z-1 absolute left-0 top-0 bottom-0 right-0 m-auto"
+    >
+      <van-loading v-if="videoOrigin.length" type="spinner" size="24px" />
+      <span v-if="!videoOrigin.length" class="text-[#fff] text-[10px]"
+        >没有找到直播源...</span
+      >
+    </div>
 
     <video
       ref="videoM3u8"
       class="videoElement"
-      autoplay
-      :webkit-playsinline="showFull"
-      :playsinline="showFull"
-      x5-video-player-type="h5-page"
+      id="videobox"
+      preload="auto"
+      webkit-playsinline="true"
+      playsinline="true"
+      x-webkit-airplay="true"
+      x5-video-player-type="h5"
+      x5-video-player-fullscreen="true"
+      x5-video-orientation="portraint"
       v-show="flag === true"
     ></video>
 
@@ -42,7 +73,7 @@
         <span>直播中</span>
       </div>
       <div class="flex items-center">
-        <span>老6</span>
+        <span>标清</span>
         <svg-icon
           class="text-[#fff] text-[16px] ml-[10px]"
           name="full-icon"
@@ -56,8 +87,14 @@
 <script setup>
 import Hls from "hls.js";
 import flvjs from "flv.js";
-import { ref, onUnmounted, nextTick, onMounted } from "vue";
+import { ref, onUnmounted, nextTick, onMounted, watch } from "vue";
 
+const props = defineProps({
+  videoOrigin: {
+    type: String,
+    default: ""
+  }
+});
 // m3u8格式视频使用变量
 const player = ref(null);
 const videoM3u8 = ref(null);
@@ -68,7 +105,7 @@ let flvPlayer = null;
 let flag = ref(true);
 
 const isShowBox = ref(false);
-const showFull = ref(false);
+const showFull = ref(true);
 const playing = ref(false); // 是否播放中
 
 const onClikeVideo = () => {
@@ -76,55 +113,47 @@ const onClikeVideo = () => {
 };
 
 const onFullVideo = () => {
-  console.log("123", videoM3u8);
-
-  let video = videoM3u8.value;
-
-  console.log("video", video);
+  let video = flag.value ? videoM3u8.value : videoRef.value;
 
   if (video.requestFullscreen) {
-    console.log("11111");
-
     video.requestFullscreen();
   } else if (video.mozRequestFullScreen) {
-    console.log("22222");
-
     video.mozRequestFullScreen();
   } else if (video.webkitRequestFullscreen) {
-    console.log("33333");
-
     video.webkitRequestFullscreen();
   } else if (video.msRequestFullscreen) {
-    console.log("4444");
-
     video.msRequestFullscreen();
+  } else if (video.webkitEnterFullscreen) {
+    video.webkitEnterFullscreen();
+  } else if (video.webkitExitFullscreen) {
+    video.webkitExitFullscreen();
   }
 };
 
 const onIsPlay = () => {
-  let elVideo = flvPlayer;
+  let elVideo = flag.value ? videoM3u8.value : videoRef.value;
 
-  if (play.value) {
+  if (playing.value) {
     elVideo.pause();
     playing.value = false;
   } else {
-    videoM3u8.value.play();
+    elVideo.play();
     playing.value = true;
   }
 };
 
-onMounted(() => {
-  // 在页面刚加载就显示视频
-  // 这个是视频链接
-  // m3u8地址:https://gc2ksc.v.kcdnvip.com/gc/zsslsjjfsd_1/index.m3u8?BR=md&region=shanghai
-  // flv地址:https://play.xshuijiu.cn/live/sd-1-4093930.flv
-
+const initVideo = () => {
   // 固定链接
-  let videosrc = ref("https://8hzb.xyz/8hzb/1709609814031.flv");
-  //   let videosrc = ref("https://demo.m3u8play.com/m3u8/out/demo.m3u8");
+  // let videosrc = ref("https://8hzb.xyz/8hzb/1709609814031.flv");
+  // let videosrc = ref("https://demo.m3u8play.com/m3u8/out/demo.m3u8");
+  console.log("props.videoOrigin", props.videoOrigin);
+
+  let videosrc = ref(props.videoOrigin);
   // 下面是通过请求获得的链接(动态显示)
   // 截取链接,判断是什么格式的视频(判断格式让对应显示)
   flag.value = videosrc.value.includes(".m3u8"); // 只能返回true或者false
+  console.log("flag.value", flag.value);
+
   if (flag.value) {
     if (Hls.isSupported()) {
       var hls = new Hls();
@@ -145,6 +174,11 @@ onMounted(() => {
         console.log("视频已暂停");
         // 在视频暂停时执行相应操作
       });
+
+      // 添加视频暂停事件
+      videoM3u8.value.addEventListener("fullScreen", () => {
+        console.log("视频全屏");
+      });
     }
     // else if (videoM3u8.canPlayType("application/vnd.apple.mpegurl")) {
     //   videoM3u8.value.src = videosrc.value;
@@ -157,10 +191,18 @@ onMounted(() => {
     // console.log("videoM3u8.value", videoM3u8.value);
   } else {
     // 创建 FLV 播放器实例
-    flvPlayer = flvjs.createPlayer({
-      type: "flv",
-      url: videosrc.value // 替换为实际的 FLV 视频 URL
-    });
+    flvPlayer = flvjs.createPlayer(
+      {
+        type: "flv",
+        isLive: true,
+        url: videosrc.value // 替换为实际的 FLV 视频 URL
+      },
+      {
+        enableWorker: true, // 启用分离的线程进行转换
+        enableStashBuffer: false, // 关闭IO隐藏缓冲区
+        stashInitialSize: 128 // 减少首帧显示等待时长
+      }
+    );
     console.log("flvPlayer", flvPlayer);
     // 绑定 FLV 播放器到 <video> 标签
     flvPlayer.attachMediaElement(videoRef.value);
@@ -169,7 +211,17 @@ onMounted(() => {
     flvPlayer.play();
     console.log("flvPlayer", flvPlayer);
   }
-});
+};
+
+watch(
+  () => props.videoOrigin,
+  val => {
+    console.log("val", val);
+    initVideo();
+  }
+);
+
+onMounted(() => {});
 </script>
 
 <style lang="less" scoped>
@@ -187,5 +239,8 @@ onMounted(() => {
 }
 .translated {
   transform: translateY(0);
+}
+.play-btn {
+  background: rgba(255, 255, 255, 0.1);
 }
 </style>

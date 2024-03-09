@@ -56,12 +56,16 @@
           </span>
         </div>
 
-        <img
-          class="w-[14px] h-[14px] mr-[4px]"
-          src="@/assets/icon-huifang.png"
-          alt=""
+        <div
+          class="min-w-[70px] flex justify-end"
           v-if="gameItem.huifang_type === -2"
-        />
+        >
+          <img
+            class="w-[14px] h-[14px] mr-[4px]"
+            src="@/assets/icon-huifang.png"
+            alt=""
+          />
+        </div>
         <div v-else>
           <div class="min-w-[70px]" v-if="!gameItem.anchorName">
             <div
@@ -97,7 +101,7 @@
 
       <!-- center part -->
       <!-- 足球 -->
-      <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center" v-if="gameItem.homeScores">
         <div
           class="flex items-center justify-end min-w-[120px] text-[12px] font-bold"
         >
@@ -181,7 +185,7 @@
           </span>
         </div>
 
-        <div class="mx-[14px] min-w-[40px]">
+        <div class="mx-[14px] min-w-[40px]" v-if="gameItem.homeScores">
           <div>
             <span>
               半:

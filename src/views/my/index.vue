@@ -1,22 +1,35 @@
 <script setup>
-import { ref, getCurrentInstance } from "vue";
+import { ref, getCurrentInstance, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
+import { showToast } from "vant";
 
 let username = proxy.$cache.local.getJSON("nickname");
+
+const getToken = ref(proxy.$cache.local.getJSON("token") || "");
 
 const onLogin = () => {
   router.push({
     path: "/login/index"
   });
 };
+
+const onOutLogin = () => {
+  console.log("123");
+
+  proxy.$cache.local.remove("token");
+  proxy.$cache.local.remove("nickname");
+  getToken.value = "";
+  username = "";
+  showToast("退出成功");
+};
 </script>
 
 <template>
-  <div class="text-[14px] text-[#000]">
+  <div class="text-[14px] h-full text-[#000]">
     <div>
       <div
         class="flex items-center bg-[#fff] mb-[5px] py-[12px] px-[18px]"
@@ -62,6 +75,17 @@ const onLogin = () => {
         </template>
       </van-cell>
     </van-cell-group>
+
+    <div class="px-[24px] absolute bottom-[100px] w-full" v-if="getToken">
+      <van-button
+        round
+        type="success"
+        class="w-full btn"
+        color="linear-gradient(to right, #f56c6c, #f56c6c)"
+        @click="onOutLogin"
+        >退出登录</van-button
+      >
+    </div>
   </div>
 </template>
 

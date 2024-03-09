@@ -61,20 +61,6 @@ const routes = [
   },
 
   {
-    path: "/race",
-    // component: Layout,
-    children: [
-      {
-        path: "racelist/:id",
-        name: "RaceList",
-        component: () => import("@/views/race-list/index.vue"),
-        meta: {
-          title: "自定义",
-        }
-      }
-    ],
-  },
-  {
     path: "/",
     // component: Layout,
     children: [
@@ -113,7 +99,7 @@ const routes = [
         }
       }
     ],
-  },
+  }
 ];
 
 export default routes;

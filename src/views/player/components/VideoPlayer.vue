@@ -12,77 +12,88 @@
     @mounted="handleMounted"
   /> -->
 
-  <video-player
-    class="video-player vjs-big-play-centered"
-    crossorigin="anonymous"
-    playsinline
-    controls
-    :volume="0.6"
-    :height="244"
-    :techOrder="['html5', 'flvjs']"
-    @mounted="handleMounted"
-    @ready="handleEvent($event)"
-    @play="handleEvent($event)"
-    @pause="handleEvent($event)"
-    @ended="handleEvent($event)"
-    @loadeddata="handleEvent($event)"
-    @waiting="handleEvent($event)"
-    @playing="handleEvent($event)"
-    @canplay="handleEvent($event)"
-    @canplaythrough="handleEvent($event)"
-    @timeupdate="handleEvent(player?.currentTime())"
-  />
+  <!-- v-model:height="config.height" -->
+  <div class="w-full h-[234px]">
+    <video-player
+      class="w-full h-full"
+      :class="['video-player', 'vjs-big-play-centered', { loading: !state }]"
+      :sources="mediaConfig.sources"
+      :poster="mediaConfig.poster"
+      :tracks="mediaConfig.tracks"
+      :autoplay="config.autoplay"
+      :playbackRates="config.playbackRates"
+      :fluid="config.fluid"
+      :loop="config.loop"
+      language="zh-CN"
+      ontSupportedMessage="此视频无法播放"
+      crossorigin="anonymous"
+      playsinline
+      v-model:volume="config.volume"
+      v-model:playbackRate="config.playbackRate"
+      v-model:controls="config.controls"
+      v-model:muted="config.muted"
+      @mounted="handleMounted"
+      @seeking="handleSeeking"
+    >
+    </video-player>
+  </div>
 </template>
 
-<script lang="ts">
+<script setup>
 import { defineComponent, defineProps, ref, watch } from "vue";
 import { VideoPlayer } from "@videojs-player/vue";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
-//import "@videojs/themes/dist/forest/index.css";
+import video_zhCN from "./zh-CN.json";
+import "videojs-flvjs-es6";
+videojs.addLanguage("zh-CN", video_zhCN);
 
-type VideoJsPlayer = ReturnType<typeof videojs>;
+const props = defineProps({ videoOrigin: String });
 
-export default defineComponent({
-  name: "vue-flv-player-example",
-  title: "FLV player (Vue)",
-  url: import.meta.url,
-  components: {
-    VideoPlayer
-  },
-  props: {
-    videoOrigin: String
-  },
-
-  setup(props) {
-    const playerSave = ref(null);
-    const handleMounted = ({ player }: { player: VideoJsPlayer }) => {
-      console.log("playerplayer", player);
-      playerSave.value = player;
-      console.log("playerplayer2", playerSave.value);
-
-      // flv.js runs only in the browser environment and does an asynchronous processing for SSR prerender.
-      import("./06-flv-video-tech").then(({ FlvJsTech }) => {
-        videojs.registerTech("Flvjs", FlvJsTech);
-        // player.src("https://play.xshuijiu.cn/live/sd-2-3736673.flv");
-        player.src(props.videoOrigin);
-      });
-    };
-    const handleEvent = (log: any) => {
-      console.log("Basic player event", log);
-    };
-
-    watch(
-      () => props.videoOrigin,
-      val => {
-        console.log("val", val);
-        handleMounted(playerSave.value);
-      }
-    );
-
-    return { handleMounted, handleEvent };
-  }
+const mediaConfig = ref({
+  sources: props.videoOrigin,
+  poster: "",
+  tracks: ""
 });
+const playbackRatesOptions = [
+  [1, 2, 3],
+  [0.5, 1.5, 2.5]
+];
+const config = ref({
+  autoplay: true,
+  height: 234,
+  volume: 0.8,
+  playbackRate: 1,
+  // playbackRates: playbackRatesOptions[0],
+  controls: true,
+  fluid: false,
+  muted: false,
+  loop: false
+});
+
+const playerSave = ref(null);
+const handleMounted = ({ player }) => {
+  console.log("playerplayer", player);
+};
+const handleEvent = log => {
+  console.log("Basic player event", log);
+};
+
+const handleSeeking = log => {
+  console.log("log", log);
+};
+
+watch(
+  () => props.videoOrigin,
+  val => {
+    console.log("val-----", val);
+
+    console.log("mediaConfig.value.sources", mediaConfig.value.sources);
+
+    mediaConfig.value.sources = val;
+    // handleMounted(playerSave.value);
+  }
+);
 </script>
 
 <style lang="less" scoped>

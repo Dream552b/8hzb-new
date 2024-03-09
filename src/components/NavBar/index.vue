@@ -77,7 +77,7 @@ const baseTabs = [
   {
     shortNameZh: "热门",
     rests: 1, // 其他
-    path: "/home"
+    path: "/"
   },
 
   {
@@ -94,7 +94,7 @@ const baseTabs = [
   },
   {
     shortNameZh: "回放",
-    path: "/home",
+    path: "/",
     rests: 1, // 其他
     sportsType: -2
   }
@@ -124,7 +124,7 @@ const onClickTab = item => {
   console.log("route", route.path);
 
   let isTime = false;
-  if (route.path !== "/home" && tabsData.value[index].path == "/home") {
+  if (route.path !== "/" && tabsData.value[index].path == "/") {
     isTime = true;
   }
   console.log("isTime", isTime);
@@ -166,7 +166,7 @@ const getMenuList = async () => {
 
   if (data.length) {
     data.map(item => {
-      item.path = "/home";
+      item.path = "/";
       item.rests = 1;
     });
   }

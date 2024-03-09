@@ -1,12 +1,12 @@
 <template>
   <div class="relative player-wrap h-full flex flex-col">
-    <span class="absolute z-20 left-[18px] top-[18px]" @click="onBack">
+    <span class="absolute z-[200] left-[18px] top-[18px]" @click="onBack">
       <van-icon size="24px" name="arrow-left" color="white" />
     </span>
 
     <!-- top video -->
     <div>
-      <!---->
+      <!-- bg-[#002200] -->
       <div class="video-wrap relative h-[234px] bg-[#000]">
         <div class="h-full" v-if="matchInfo.sportsType">
           <notStarted
@@ -20,7 +20,7 @@
           <div v-else-if="originData[originDataIndex]">
             <VideoPlayer
               ref="VideoPlayerRef"
-              :videoOrigin="originData[originDataIndex]"
+              :videoOrigin="originData[originDataIndex].url"
             />
 
             <!-- <div
@@ -49,7 +49,6 @@
             <div>暂无视频可看</div>
           </div>
         </div>
-        <!-- <videoCom v-else :videoOrigin="originData[originDataIndex]" /> -->
       </div>
 
       <div class="handlan bg-[#fff] px-[10px] pt-[10px] pb-[4px] text-[12px]">
@@ -64,7 +63,7 @@
               alt=""
               :class="{
                 rotate: FOOTBALL_STYLE_STATUS_ARR.find(
-                  s => s === matchInfo.statusID
+                  s => s === matchInfo.matchStatus
                 )
               }"
             />
@@ -96,7 +95,7 @@
           </div>
 
           <div class="flex items-center shrink-0">
-            <div class="w-[0.4px] h-[10px] bg-[#9f9f9f] mx-[12px]"></div>
+            <!-- <div class="w-[0.4px] h-[10px] bg-[#9f9f9f] mx-[12px]"></div> -->
 
             <span>{{ FOOTBALL_TYPE[matchInfo.matchStatus] }}</span>
           </div>
@@ -146,7 +145,7 @@
           </div>
 
           <div class="flex items-center shrink-0 min-w-[40px] text-[12px]">
-            <div class="w-[0.4px] h-[10px] bg-[#9f9f9f] mx-[6px]"></div>
+            <!-- <div class="w-[0.4px] h-[10px] bg-[#9f9f9f] mx-[6px]"></div> -->
 
             <span>{{ BASKETBALL_TYPE[matchInfo.matchStatus] }}</span>
           </div>
@@ -170,7 +169,7 @@
               :key="o_index"
               @click="onChangeOrigin(o_index)"
             >
-              信号源{{ o_index + 1 }}
+              {{ o_item.name }}
             </div>
           </div>
         </div>
@@ -201,19 +200,19 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
 import { nextTick, ref, onMounted, reactive, toRefs, onUnmounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+
 import { getMatchInfo } from "@/api/game";
 import { secondsToMinutesAndSeconds } from "@/utils/time";
 // import videoCom from "./videoCom.vue";
-import notStarted from "./not-started.vue";
+import notStarted from "./components/not-started.vue";
 import VideoPlayer from "./components/VideoPlayer.vue";
-
+import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
 const isShow = ref(true);
 const iframeUrl = ref(
-  `http://192.168.3.248:5174/chat/${route.params.sportsType}/${route.params.matchID}`
+  `https://chat.8hzb.chat/chat/${route.params.sportsType}/${route.params.matchID}`
 );
 const VideoPlayerRef = ref();
 const player = ref(null);
@@ -252,17 +251,46 @@ const handlanGetMatchInfo = async () => {
   if (code !== 200) return;
   let disData = onObjDisScore(data);
 
-  if (disData.pullurl1) {
-    originData.value.push(disData.pullurl1);
-  }
-  if (disData.pullurl2) {
-    originData.value.push(disData.pullurl2);
-  }
-  if (disData.pullurl3) {
-    originData.value.push(disData.pullurl3);
-  }
+  videoOriginDis(disData);
 
   matchInfo.value = disData;
+};
+
+// 视频源处理
+const videoOriginDis = disData => {
+  // 主播源处理
+  if (disData.matchLiveInfo.playUrl) {
+    // flv 换成 m3u8； 只是.后面的格式不同
+    let disURL =
+      disData.matchLiveInfo.playUrl.substring(
+        0,
+        disData.matchLiveInfo.playUrl.length - 4
+      ) + ".m3u8";
+    let obj = {
+      name: disData.matchLiveInfo.anchorName,
+      url: disURL
+    };
+    originData.value.push(obj);
+  }
+
+  let arr = ["pullurl1", "pullurl2", "pullurl3"];
+  arr.forEach((item, index) => {
+    if (disData[item]) {
+      // flv 换成 m3u8； 只是.后面的格式不同
+      let disURL =
+        disData[item].substring(0, disData[item].length - 4) + ".m3u8";
+      let obj = {
+        name: "信号源" + (index + 1),
+        url: disURL
+      };
+      originData.value.push(obj);
+    }
+  });
+
+  // originData.value.push({
+  //   name: "皇家主播",
+  //   url: "https://play.xshuijiu.cn/live/sd-1-4053236.m3u8"
+  // });
 };
 
 // obj处理比分

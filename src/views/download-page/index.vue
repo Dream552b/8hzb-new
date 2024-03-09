@@ -58,7 +58,7 @@
         </div>
       </div>
 
-      <div class="mt-[28px]">
+      <div class="mt-[28px]" v-if="isShow">
         <van-button type="primary" color="#1FCBCA" round block
           >立即下载</van-button
         >
@@ -69,6 +69,17 @@
 
 <script setup>
 import TopNavBar from "@/components/TopNavBar/index.vue";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+const router = useRouter();
+const route = useRoute();
+console.log("route", route.query.from);
+
+const isShow = ref(true);
+
+if (route.query.from == "app") {
+  isShow.value = false;
+}
 </script>
 
 <style lang="less" scoped>

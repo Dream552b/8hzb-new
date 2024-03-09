@@ -179,7 +179,7 @@ const isEmpty = ref(false);
 
 // 固定的类型
 const typedata = {
-  "/home": 0,
+  "/": 0,
   "/basketball": 2,
   "/football": 1,
   "/competition-results": -1

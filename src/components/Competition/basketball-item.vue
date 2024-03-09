@@ -45,12 +45,16 @@
           >
         </div>
 
-        <img
-          class="w-[14px] h-[14px] mr-[4px]"
-          src="@/assets/icon-huifang.png"
-          alt=""
+        <div
+          class="min-w-[70px] flex justify-end"
           v-if="gameItem.huifang_type === -2"
-        />
+        >
+          <img
+            class="w-[14px] h-[14px] mr-[4px]"
+            src="@/assets/icon-huifang.png"
+            alt=""
+          />
+        </div>
         <div v-else>
           <div class="min-w-[70px]" v-if="!gameItem.anchorName">
             <div

@@ -63,6 +63,7 @@
       x5-video-player-type="h5-page"
     ></video>
 
+    <!-- 自定义状态栏 -->
     <div
       class="gradient-box fade-in-out text-[#fff] w-full absolute z-[100] bottom-0 flex justify-between items-center px-[20px] text-[10px]"
       :class="isShowBox ? 'translated' : ''"
@@ -146,7 +147,6 @@ const initVideo = () => {
   // 固定链接
   // let videosrc = ref("https://8hzb.xyz/8hzb/1709609814031.flv");
   // let videosrc = ref("https://demo.m3u8play.com/m3u8/out/demo.m3u8");
-  console.log("props.videoOrigin", props.videoOrigin);
 
   let videosrc = ref(props.videoOrigin);
   // 下面是通过请求获得的链接(动态显示)

@@ -2,11 +2,13 @@ import Axios from "axios";
 import NProgress from "../progress";
 import { showFailToast } from "vant";
 import "vant/es/toast/style";
+import cache from '../cache'
 
 // 默认 axios 实例请求配置
 const configDefault = {
   headers: {
-    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+
   },
   timeout: 0,
   baseURL: import.meta.env.VITE_BASE_API,
@@ -31,9 +33,10 @@ class Http {
       config => {
         // NProgress.start();
         // 发送请求前，可在此携带 token
-        // if (token) {
-        //   config.headers['token'] = token
-        // }
+        if (localStorage.getItem('token')) {
+          config.headers['apiToken'] = cache.local.getJSON('token')
+
+        }
         return config;
       },
       error => {

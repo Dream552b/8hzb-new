@@ -8,6 +8,8 @@ const props = defineProps({
   }
 });
 
+const emits = defineEmits(["onPlayback"]);
+
 let timeok = ref("");
 const timer = ref(null);
 
@@ -19,7 +21,6 @@ function countdown() {
   const timeDiff = startTime - currentTime; // 计算时间差（单位：毫秒）
 
   if (timeDiff <= 0) {
-    console.log("比赛已经开始！");
     timeok.value = "比赛已经开始！";
     return;
   }
@@ -38,6 +39,10 @@ function countdown() {
 
   timer.value = setTimeout(countdown, 1000); // 每隔一秒重新计算倒计时
 }
+
+const lookBlok = item => {
+  emits("onPlayback", item);
+};
 onMounted(() => {
   countdown();
 });
@@ -83,7 +88,9 @@ onUnmounted(() => {
         <div class="text-[22px] font-bold" v-if="matchInfo.matchStatus === 1">
           VS
         </div>
-        <div class="text-[22px] font-bold mt-[6px]">
+        <div
+          class="text-[22px] font-bold mt-[6px] flex flex-col justify-center items-center"
+        >
           <span v-if="matchInfo.sportsType == 1 && matchInfo.matchStatus === 8">
             <span> {{ matchInfo.homeScores[0] }}</span>
             <span class="mx-[2px]">:</span>
@@ -97,6 +104,19 @@ onUnmounted(() => {
             <span class="mx-[2px]">-</span>
             <span>{{ matchInfo.home_basketball_score }}</span>
           </span>
+
+          <div
+            v-if="matchInfo.playbackUrl"
+            class="flex items-center mt-[2px]"
+            @click="lookBlok(matchInfo)"
+          >
+            <img
+              class="w-[14px] h-[12px] mr-[4px] text-[#fff]"
+              src="@/assets/icon-hui-bai.png"
+              alt=""
+            />
+            <span class="text-[10px]">查看回放</span>
+          </div>
         </div>
       </div>
       <div

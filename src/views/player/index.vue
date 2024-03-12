@@ -1,6 +1,6 @@
 <template>
   <div class="relative player-wrap h-full flex flex-col">
-    <span class="absolute z-[200] left-[18px] top-[18px]" @click="onBack">
+    <span class="absolute z-[200] left-[18px] top-[10px]" @click="onBack">
       <van-icon size="24px" name="arrow-left" color="white" />
     </span>
 
@@ -11,43 +11,29 @@
         <div class="h-full" v-if="matchInfo.sportsType">
           <notStarted
             :matchInfo="matchInfo"
+            @onPlayback="onPlayback"
             v-if="
-              matchInfo.matchStatus === 1 ||
-              (matchInfo.sportsType === 1 && matchInfo.matchStatus === 8) ||
-              (matchInfo.sportsType === 2 && matchInfo.matchStatus === 10)
+              (matchInfo.matchStatus === 1 ||
+                (matchInfo.sportsType === 1 && matchInfo.matchStatus === 8) ||
+                (matchInfo.sportsType === 2 && matchInfo.matchStatus === 10)) &&
+              !originData[originDataIndex]
             "
           />
           <div v-else-if="originData[originDataIndex]">
             <VideoPlayer
               ref="VideoPlayerRef"
-              :videoOrigin="originData[originDataIndex].url"
+              :videoOrigin="originData[originDataIndex]"
             />
-
-            <!-- <div
-              class="text-[10px] text-[#fff] w-full h-full flex flex-col justify-center items-center z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
-            >
-              <img
-                class="w-[125px] h-[30px] mb-[6px]"
-                src="@/assets/img-video-logo.png"
-                alt=""
-                @click="onIsPlay"
-              />
-              <div>赛事直播准备中….</div>
-            </div> -->
           </div>
 
-          <div
-            v-else
-            class="text-[10px] text-[#fff] w-full h-full flex flex-col justify-center items-center"
-          >
-            <img
-              class="w-[125px] h-[30px] mb-[6px]"
-              src="@/assets/img-video-logo.png"
-              alt=""
-              @click="onIsPlay"
-            />
-            <div>暂无视频可看</div>
-          </div>
+          <videoStatus v-else :videoStatusNum="2" />
+
+          <!-- 广告 -->
+          <advPosition
+            class="absolute top-0 left-0 z-[100]"
+            :matchID="queryParams.matchID"
+            :advInfo="advInfo"
+          />
         </div>
       </div>
 
@@ -152,18 +138,18 @@
         </div>
 
         <div class="mt-[20px] flex items-center">
-          <div class="font-bold">直播源：</div>
+          <div class="font-bold shrink-0">直播源：</div>
 
-          <div
+          <!-- <div
             class="text-[10px] bg-[#e9fafa] rounded-[20px] px-[12px] py-[5px] mr-[10px]"
             v-if="matchInfo.matchLiveInfo?.playUrl"
           >
             {{ matchInfo.matchLiveInfo.anchorName }}
-          </div>
+          </div> -->
 
           <div v-if="originData.length" class="flex items-center">
             <div
-              class="text-[10px] bg-[#e9fafa] rounded-[20px] px-[12px] py-[5px] mr-[10px]"
+              class="text-[10px] bg-[#e9fafa] rounded-[20px] px-[12px] py-[5px] mr-[10px] van-ellipsis max-w-[90px]"
               :class="{ 'bg-avtive': o_index === originDataIndex }"
               v-for="(o_item, o_index) in originData"
               :key="o_index"
@@ -201,11 +187,13 @@ import "video.js/dist/video-js.css";
 
 import { nextTick, ref, onMounted, reactive, toRefs, onUnmounted } from "vue";
 
-import { getMatchInfo } from "@/api/game";
+import { getMatchInfo, getAdvertisement } from "@/api/game";
 import { secondsToMinutesAndSeconds } from "@/utils/time";
 // import videoCom from "./videoCom.vue";
+import advPosition from "./components/adv-position.vue";
 import notStarted from "./components/not-started.vue";
 import VideoPlayer from "./components/VideoPlayer.vue";
+import videoStatus from "./components/video-status.vue";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -221,7 +209,7 @@ const myPlayer = ref(null);
 const originData = ref([]);
 const originDataIndex = ref(0);
 
-console.log("route", route);
+const advInfo = ref({});
 
 const data = reactive({
   queryParams: {
@@ -233,8 +221,6 @@ const data = reactive({
 const { queryParams, matchInfo } = toRefs(data);
 
 const onBack = () => {
-  console.log("123123");
-
   router.back(-1);
 };
 
@@ -242,6 +228,16 @@ const onChangeOrigin = index => {
   originDataIndex.value = index;
 };
 
+const onGetAdvertisement = async () => {
+  let params = {
+    ...queryParams.value
+  };
+  const { data, code } = await getAdvertisement(params);
+  if (code !== 200) return;
+  advInfo.value = data;
+};
+
+// 视频详情
 const handlanGetMatchInfo = async () => {
   let params = {
     ...queryParams.value
@@ -254,6 +250,15 @@ const handlanGetMatchInfo = async () => {
   videoOriginDis(disData);
 
   matchInfo.value = disData;
+};
+
+const onPlayback = item => {
+  if (originData.value.length) return;
+  let obj = {
+    name: "信号源1",
+    url: item.playbackUrl
+  };
+  originData.value.push(obj);
 };
 
 // 视频源处理
@@ -304,25 +309,9 @@ const onObjDisScore = dataObj => {
 };
 
 handlanGetMatchInfo();
+onGetAdvertisement();
 
-onMounted(() => {
-  const labelMap = {
-    0: "高清",
-    1: "中文蓝光",
-    2: "英文蓝光"
-  };
-  const arr = ["https://play.xshuijiu.cn/live/sd-2-3747549.flv", "", ""]
-    .map((item, idx) => {
-      return {
-        src: item,
-        name: labelMap[idx],
-        type: "video/flv",
-        selected: idx === 0
-      };
-    })
-    .filter(item => item);
-  // VideoPlayerRef.value.init({ sources: arr });
-});
+onMounted(() => {});
 </script>
 
 <style lang="less" scoped>

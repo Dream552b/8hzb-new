@@ -121,14 +121,10 @@ const onClickTab = item => {
   tabsRef.value.scrollTo(index);
   proxy.$cache.session.setJSON("tabsIndex", index);
 
-  console.log("route", route.path);
-
   let isTime = false;
   if (route.path !== "/" && tabsData.value[index].path == "/") {
     isTime = true;
   }
-  console.log("isTime", isTime);
-
   // 切换之前
   if (tabsData.value[index].path) {
     router.replace({
@@ -141,14 +137,12 @@ const onClickTab = item => {
     setTimeout(() => {
       //其他tab
       if (tabsData.value[index].rests) {
-        console.log("tabsData.value[item.name]", tabsData.value[index]);
         emit("refreshListData", tabsData.value[index]);
       }
     }, 150);
   } else {
     //其他tab
     if (tabsData.value[index].rests) {
-      console.log("tabsData.value[item.name]", tabsData.value[index]);
       emit("refreshListData", tabsData.value[index]);
     }
   }
@@ -177,13 +171,12 @@ const getMenuList = async () => {
 
 getMenuList();
 
-watch(
-  () => route.path,
-  () => {
-    console.log("route.path---", route.path);
-  },
-  { immediate: true }
-);
+// watch(
+//   () => route.path,
+//   () => {
+//   },
+//   { immediate: true }
+// );
 
 defineExpose({ onClickTab });
 </script>

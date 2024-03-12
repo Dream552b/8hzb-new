@@ -58,9 +58,7 @@ export default defineComponent({
   setup(props) {
     const playerSave = ref(null);
     const handleMounted = ({ player }: { player: VideoJsPlayer }) => {
-      console.log("playerplayer", player);
       playerSave.value = player;
-      console.log("playerplayer2", playerSave.value);
 
       // flv.js runs only in the browser environment and does an asynchronous processing for SSR prerender.
       import("./06-flv-video-tech").then(({ FlvJsTech }) => {

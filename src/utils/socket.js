@@ -4,7 +4,8 @@ import { io } from "socket.io-client";
 export const socketState = reactive({
     connected: false,
     matchOdds: [],
-    matchLive: []
+    matchLive: [],
+    matchStatusIDChange: {}
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
@@ -37,6 +38,18 @@ socket.on("matchLive", (...args) => {
     // console.log('matchLive', args);
 
 });
+
+// 中场
+socket.on("matchStatusIDChange", (...args) => {
+    console.log('中场matchStatusIDChange', args);
+
+    if (args[0].code !== 200) return
+    socketState.matchStatusIDChange = args[0].data
+    // console.log('matchLive', args);
+
+});
+
+
 
 socket.on("bar", (...args) => {
     socketState.barEvents.push(args);

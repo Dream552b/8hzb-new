@@ -97,6 +97,14 @@ const routes = [
         meta: {
           title: "登录",
         }
+      },
+      {
+        path: "videojs-player/index",
+        name: "Videojs-player",
+        component: () => import("@/views/videojs-player/01-advanced-player/index.vue"),
+        meta: {
+          title: "登录",
+        }
       }
     ],
   }

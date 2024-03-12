@@ -1,10 +1,10 @@
 <template>
   <div class="example w-full">
-    <player-playlist
+    <!-- <player-playlist
       class="playlist"
       :index="playMediaIndex"
       @update:index="handleMediaChange"
-    />
+    /> -->
     <div class="player-wrapper w-full">
       <div class="top w-full" :class="{ mobile: visitor.isMobileDevice }">
         <video-player
@@ -106,7 +106,7 @@ export default defineComponent({
       volume: 0.8,
       playbackRate: 1,
       playbackRates: playbackRatesOptions[0],
-      controls: true,
+      controls: false,
       fluid: false,
       muted: false,
       loop: false

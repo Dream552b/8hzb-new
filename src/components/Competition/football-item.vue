@@ -56,12 +56,9 @@
           </span>
         </div>
 
-        <div
-          class="min-w-[70px] flex justify-end"
-          v-if="gameItem.huifang_type === -2"
-        >
+        <div class="min-w-[70px] flex justify-end" v-if="isShowFang">
           <img
-            class="w-[14px] h-[14px] mr-[4px]"
+            class="w-[14px] h-[12px] mr-[4px]"
             src="@/assets/icon-huifang.png"
             alt=""
           />
@@ -79,16 +76,36 @@
               />
               <span>直播中</span>
             </div>
+            <div
+              v-if="gameItem.statusID === 1"
+              class="flex justify-end font-bold text-[#999999] leading-[14px]"
+            >
+              <img
+                class="w-[14px] h-[14px] mr-[4px]"
+                src="@/assets/icon-bo-no.png"
+                alt=""
+              />
+              <span>未开始</span>
+            </div>
           </div>
 
           <div class="min-w-[70px]" v-if="gameItem.anchorName">
             <div
               class="flex justify-end font-bold text-[#58C6C6] leading-[14px]"
-              v-if="F_LIVE_STATUS.find(s => s === gameItem.statusID)"
+              :class="
+                gameItem.statusID === 1 ? ' text-[#999999]' : ' text-[#58C6C6]'
+              "
             >
               <img
-                class="w-[14px] h-[14px] mr-[4px]"
-                src="@/assets/icon-bo-active.png"
+                class="w-[12px] h-[12px] mr-[4px]"
+                src="@/assets/icon-zhubo-no.png"
+                alt=""
+                v-if="gameItem.statusID === 1"
+              />
+              <img
+                v-else
+                class="w-[12px] h-[12px] mr-[4px]"
+                src="@/assets/icon-zhubo.png"
                 alt=""
               />
               <span>{{ gameItem.anchorName }}</span>
@@ -207,7 +224,7 @@
           :class="{ blink: gameItem.bs_zhiActive }"
         >
           <span>
-            {{ gameItem.bs.split(",").slice(0, 3).join(" ") }}
+            {{ gameItem.eu.split(",").slice(0, 3).join(" ") }}
           </span>
         </div>
       </div>
@@ -218,20 +235,32 @@
         alt=""
       />
 
-      <img
-        v-show="dataOrgin !== 'topKey'"
-        class="w-[10px] h-[9px] ml-[8px] absolute left-[2px] bottom-[8px]"
-        src="@/assets/img-top.png"
-        alt=""
-        @click.stop="onClikeTop(gameItem)"
-      />
-      <img
-        v-show="dataOrgin === 'topKey'"
-        class="w-[10px] h-[9px] ml-[8px] absolute left-[2px] bottom-[8px]"
-        src="@/assets/img-top-ok.png"
-        alt=""
-        @click.stop="onClikeTopClose(gameItem)"
-      />
+      <div v-if="!isShowTop">
+        <img
+          v-show="dataOrgin !== 'topKey'"
+          class="w-[10px] h-[9px] ml-[8px] absolute left-[2px] bottom-[8px]"
+          src="@/assets/img-top.png"
+          alt=""
+          @click.stop="onClikeTop(gameItem)"
+        />
+
+        <div v-show="dataOrgin === 'topKey'">
+          <img
+            class="w-[13px] h-[13px] ml-[8px] absolute left-[2px] bottom-[8px]"
+            src="@/assets/icon-seting.png"
+            alt=""
+            @click.stop="onClikeTopClose(gameItem)"
+            v-if="gameItem.topStatus"
+          />
+          <img
+            v-else
+            class="w-[10px] h-[9px] ml-[8px] absolute left-[2px] bottom-[8px]"
+            src="@/assets/img-top-ok.png"
+            alt=""
+            @click.stop="onClikeTopClose(gameItem)"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -269,9 +298,13 @@ const emit = defineEmits(["matchObjects", "refreshTopData"]);
 
 const { proxy } = getCurrentInstance();
 
-const onClikeTop = item => {
-  console.log("dataOrgin", props.dataOrgin);
+// 赛果不显示置顶
+const isShowTop = ref(route.path === "/competition-results");
+// 回放按钮
+const isShowFang = ref(proxy.$cache.session.getJSON("tabsIndex") === 4);
+console.log("isShowFang", isShowFang);
 
+const onClikeTop = item => {
   let topData = proxy.$cache.session.getJSON("topData") || [];
 
   let okID = topData.find(sonID => sonID === item.id);

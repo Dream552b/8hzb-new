@@ -1,13 +1,14 @@
 <script setup>
 import { ref, getCurrentInstance, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-
+import { getUserInfo } from "@/api/login";
+import deTou from "@/assets/img-tou.png";
 const route = useRoute();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 import { showToast } from "vant";
 
-let username = proxy.$cache.local.getJSON("nickname");
+let userInfo = ref(proxy.$cache.local.getJSON("userInfo") || {});
 
 const getToken = ref(proxy.$cache.local.getJSON("token") || "");
 
@@ -17,13 +18,21 @@ const onLogin = () => {
   });
 };
 
-const onOutLogin = () => {
-  console.log("123");
+const onGetUserInfo = async () => {
+  let { code, data } = await getUserInfo();
 
+  proxy.$cache.local.setJSON("userInfo", data);
+
+  userInfo.value = data;
+};
+
+onGetUserInfo();
+
+const onOutLogin = () => {
   proxy.$cache.local.remove("token");
   proxy.$cache.local.remove("nickname");
   getToken.value = "";
-  username = "";
+  userInfo.value = {};
   showToast("退出成功");
 };
 </script>
@@ -33,15 +42,15 @@ const onOutLogin = () => {
     <div>
       <div
         class="flex items-center bg-[#fff] mb-[5px] py-[12px] px-[18px]"
-        @click="username ? '' : onLogin()"
+        @click="userInfo.nickname ? '' : onLogin()"
       >
         <img
-          class="w-[50px] h-[50px] mr-[10px]"
-          src="@/assets/img-tou.png"
+          class="w-[50px] h-[50px] mr-[10px] rounded-[50%]"
+          :src="userInfo.headerImg ? userInfo.headerImg : deTou"
           alt=""
         />
         <span class="custom-title font-bold text-[16px]">{{
-          username ? username : "点击登录"
+          userInfo.nickname ? userInfo.nickname : "点击登录"
         }}</span>
       </div>
     </div>

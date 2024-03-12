@@ -206,20 +206,19 @@ const onLoad = () => {
   if (refreshing.value) return;
   if (finished.value) return;
 
-  console.log("加载更多");
+  // console.log("加载更多");
 
   queryParams.value.page++;
 
   loading.value = true;
+  // if (queryParams.value.page > 1) return;
   onGetMatchList();
 };
 
 // 下拉刷新
 const onRefresh = () => {
   if (loading.value) return;
-  console.log("loading.value", loading.value);
-
-  console.log("下拉刷新");
+  // console.log("下拉刷新");
   refreshing.value = true;
 
   finishedText.value = "";
@@ -247,7 +246,11 @@ const reDate = () => {
 // 列表数据
 const onGetMatchList = async () => {
   let params = {
-    ...queryParams.value
+    ...queryParams.value,
+    type:
+      proxy.$cache.session.getJSON("tabsIndex") == 4
+        ? -2
+        : queryParams.value.type
   };
 
   const { data, code } = await getMatchList(params);
@@ -279,13 +282,19 @@ const onGetMatchList = async () => {
 
   data.records = onDisScore(data.records);
 
-  //判断是否是用户置顶的数据
-  let isUserData = isUserTopDate(data.records);
+  copyList.value = JSON.parse(JSON.stringify(data.records));
 
-  data.records = onTimeDis(isUserData);
+  //赛果不需要置顶
+  let noTopisUserData;
+  if (params.type !== -1) {
+    //判断是否是用户置顶的数据
+    noTopisUserData = isUserTopDate(data.records);
+  }
+
+  // 日期数组分类 确定了数据
+  onTimeDis(noTopisUserData || data.records);
 
   list.value.push(...data.records);
-  copyList.value = JSON.parse(JSON.stringify(list.value));
 };
 
 // 处理比分
@@ -342,22 +351,40 @@ const isUserTopDate = datalist => {
 
   let odata = JSON.parse(JSON.stringify(datalist)); //处理置顶
 
+  //用户置顶
+  let uArr = []; //用户置顶
   for (var j = 0; j < topDataID.value.length; j++) {
-    for (var i = 0; i < odata.length; i++) {
-      if (odata[i].id === topDataID.value[j]) {
+    for (var i = 0; i < datalist.length; i++) {
+      if (datalist[i].id === topDataID.value[j]) {
+        uArr.push(odata[i]);
         topArrayData.value.push(odata[i]);
-        odata.splice(i, 1);
       }
     }
   }
+  let idsToRemoveUser = uArr.map(item => item.id); // 获取arr2中的id数组
+  // 没置顶的数据
+  let filteredArrUser = odata.filter(
+    item => !idsToRemoveUser.includes(item.id)
+  );
+  odata = filteredArrUser;
+  //--------
+
   // 系统置顶
+  let arr1 = []; //置顶数据
   for (var i = 0; i < odata.length; i++) {
     if (odata[i].topStatus) {
+      arr1.push(odata[i]);
       topArrayData.value.unshift(odata[i]);
-      odata.splice(i, 1);
     }
   }
-  return odata;
+
+  let idsToRemove = arr1.map(item => item.id); // 获取arr2中的id数组
+  // 没置顶的数据
+  let filteredArr = odata.filter(item => !idsToRemove.includes(item.id));
+
+  // 时间升序  已置顶的数据
+  topArrayData.value.sort((a, b) => a.matchTime - b.matchTime);
+  return filteredArr;
 };
 
 // 点击置顶数据处理
@@ -393,14 +420,6 @@ const refreshListData = tabObj => {
 
   onRefresh();
 };
-
-// socket.connect();
-// const connect = () => {
-//   socket.connect();
-// };
-// const disconnect = () => {
-//   socket.disconnect();
-// };
 
 // ws比分处理
 const onWsDisScore = data => {
@@ -486,7 +505,7 @@ const onWsDisScore = data => {
 const onWsDisSun = data => {
   if (data.sportsType === 1) {
     let id = data.matchID;
-    let type = data.type; // 亚指：asia, 大小球：bs
+    let type = data.type; // 亚指：asia, 大小球：eu
     let sun = data.data;
 
     Object.entries(timeObjData.value).forEach(([key, value]) => {
@@ -495,7 +514,7 @@ const onWsDisSun = data => {
           v_item[type] = sun;
           if (type === "asia") {
             v_item.asia_zhiActive = true;
-          } else if (type === "bs") {
+          } else if (type === "eu") {
             v_item.bs_zhiActive = true;
           }
           disStyleClose(id);
@@ -531,6 +550,7 @@ const onWsDisSun = data => {
   }
 };
 
+// TODO:测试
 const test = () => {
   let data = {
     sportsType: 1,
@@ -583,7 +603,6 @@ const test = () => {
   let kaiqiuTime = data.score[2]; //小节剩余时间(秒) - int"
   let homeScores = data.score[3];
   let awayScores = data.score[4];
-  console.log("裂了", id);
 
   Object.entries(timeObjData.value).forEach(([key, value]) => {
     value.map((v_item, v_index) => {
@@ -645,8 +664,6 @@ const disStyleClose = id => {
 };
 
 onMounted(() => {
-  console.log("onMounted");
-
   queryParams.value.page = 0;
 
   // 比分，时间更新

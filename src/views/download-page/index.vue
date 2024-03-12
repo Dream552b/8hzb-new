@@ -73,7 +73,6 @@ import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
-console.log("route", route.query.from);
 
 const isShow = ref(true);
 

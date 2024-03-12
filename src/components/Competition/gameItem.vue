@@ -399,8 +399,6 @@ const emit = defineEmits(["matchObjects", "refreshTopData"]);
 const { proxy } = getCurrentInstance();
 
 const onClikeTop = item => {
-  console.log("dataOrgin", props.dataOrgin);
-
   let topData = proxy.$cache.session.getJSON("topData") || [];
 
   let okID = topData.find(sonID => sonID === item.id);

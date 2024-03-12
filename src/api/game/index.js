@@ -27,3 +27,12 @@ export function getMatchInfo(params) {
         params
     });
 }
+
+// 广告详情
+export function getAdvertisement(params) {
+    return http.request({
+        url: "/api/v2/advertisement/info",
+        method: "get",
+        params
+    });
+}

@@ -31,6 +31,7 @@
     "videojs": "^1.0.0",
     "videojs-flvjs-es6": "^1.0.1",
     "vue": "^3.3.4",
+    "vue-marquee-text-component": "^2.0.1",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

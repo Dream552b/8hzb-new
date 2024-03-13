@@ -41,6 +41,9 @@ dependencies:
   vue:
     specifier: ^3.3.4
     version: 3.3.7
+  vue-marquee-text-component:
+    specifier: ^2.0.1
+    version: 2.0.1
   vue-router:
     specifier: ^4.2.5
     version: 4.2.5(vue@3.3.7)
@@ -1764,6 +1767,11 @@ packages:
     resolution: {integrity: sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /core-js@3.36.0:
+    resolution: {integrity: sha512-mt7+TUBbTFg5+GngsAxeKBTl5/VS0guFeJacYge9OmHb+m058UwwIm41SE9T4Den7ClatV57B6TYTuJ0CX1MAw==}
+    requiresBuild: true
+    dev: false
 
   /cors@2.8.5:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
@@ -5085,6 +5093,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /vue-marquee-text-component@2.0.1:
+    resolution: {integrity: sha512-dbeRwDY5neOJcWZrDFU2tJMhPSsxN25ZpNYeZdt0jkseg1MbyGKzrfEH9nrCFZRkEfqhxG+ukyzwVwR9US5sTQ==}
+    dependencies:
+      core-js: 3.36.0
+      vue: 3.3.7
+    transitivePeerDependencies:
+      - typescript
+    dev: false
 
   /vue-router@4.2.5(vue@3.3.7):
     resolution: {integrity: sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==}

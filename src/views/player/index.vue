@@ -16,13 +16,14 @@
               (matchInfo.matchStatus === 1 ||
                 (matchInfo.sportsType === 1 && matchInfo.matchStatus === 8) ||
                 (matchInfo.sportsType === 2 && matchInfo.matchStatus === 10)) &&
-              !originData[originDataIndex]
+              !isBackVideo
             "
           />
           <div v-else-if="originData[originDataIndex]">
             <VideoPlayer
               ref="VideoPlayerRef"
               :videoOrigin="originData[originDataIndex]"
+              :isBackVideo="isBackVideo"
             />
           </div>
 
@@ -137,15 +138,8 @@
           </div>
         </div>
 
-        <div class="mt-[20px] flex items-center">
+        <div class="mt-[20px] flex items-center" v-if="!isBackVideo">
           <div class="font-bold shrink-0">直播源：</div>
-
-          <!-- <div
-            class="text-[10px] bg-[#e9fafa] rounded-[20px] px-[12px] py-[5px] mr-[10px]"
-            v-if="matchInfo.matchLiveInfo?.playUrl"
-          >
-            {{ matchInfo.matchLiveInfo.anchorName }}
-          </div> -->
 
           <div v-if="originData.length" class="flex items-center">
             <div
@@ -186,7 +180,7 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
 import { nextTick, ref, onMounted, reactive, toRefs, onUnmounted } from "vue";
-
+import { socket, socketState } from "@/utils/socket";
 import { getMatchInfo, getAdvertisement } from "@/api/game";
 import { secondsToMinutesAndSeconds } from "@/utils/time";
 // import videoCom from "./videoCom.vue";
@@ -200,7 +194,7 @@ const route = useRoute();
 
 const isShow = ref(true);
 const iframeUrl = ref(
-  `https://chat.8hzb.chat/chat/${route.params.sportsType}/${route.params.matchID}`
+  `https://chat.8hzb.chat/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
 );
 const VideoPlayerRef = ref();
 const player = ref(null);
@@ -210,6 +204,7 @@ const originData = ref([]);
 const originDataIndex = ref(0);
 
 const advInfo = ref({});
+const isBackVideo = ref(false);
 
 const data = reactive({
   queryParams: {
@@ -255,10 +250,12 @@ const handlanGetMatchInfo = async () => {
 const onPlayback = item => {
   if (originData.value.length) return;
   let obj = {
-    name: "信号源1",
+    name: "回放源",
     url: item.playbackUrl
   };
+  isBackVideo.value = true;
   originData.value.push(obj);
+  console.log("originData.value", originData.value);
 };
 
 // 视频源处理
@@ -279,13 +276,15 @@ const videoOriginDis = disData => {
   }
 
   let arr = ["pullurl1", "pullurl2", "pullurl3"];
+  let nameObj = { pullurl1: "标清", pullurl2: "高清", pullurl3: "蓝光" };
+
   arr.forEach((item, index) => {
     if (disData[item]) {
       // flv 换成 m3u8； 只是.后面的格式不同
       let disURL =
         disData[item].substring(0, disData[item].length - 4) + ".m3u8";
       let obj = {
-        name: "信号源" + (index + 1),
+        name: nameObj[item],
         url: disURL
       };
       originData.value.push(obj);
@@ -311,7 +310,15 @@ const onObjDisScore = dataObj => {
 handlanGetMatchInfo();
 onGetAdvertisement();
 
-onMounted(() => {});
+onMounted(() => {
+  // 连接socket房间
+  socket.emit("joinMatchRoom", { matchID: Number(queryParams.value.matchID) });
+});
+onUnmounted(() => {
+  // 退出socket房间
+  socket.emit("exitMatchRoom", { matchID: Number(queryParams.value.matchID) });
+  console.log("onUnmounted");
+});
 </script>
 
 <style lang="less" scoped>

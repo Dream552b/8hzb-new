@@ -16,15 +16,25 @@ export const playlist = [
     description: "Sintel",
     duration: 888,
     poster: "//d2zihajmogu5jn.cloudfront.net/sintel/poster.png",
+    // sources: [
+    //   {
+    //     src: "//d2zihajmogu5jn.cloudfront.net/sintel/master.m3u8",
+    //     type: "application/x-mpegurl"
+    //   },
+    //   {
+    //     src: "//d2zihajmogu5jn.cloudfront.net/sintel/sintel.mp4",
+    //     type: "video/mp4"
+    //   }
+    // ]
     sources: [
       {
-        src: "//d2zihajmogu5jn.cloudfront.net/sintel/master.m3u8",
+        src: "https://qiaoya.oss-cn-shenzhen.aliyuncs.com/vod-5973f1/liveRecord/e1ae5760fd9371496664ba2fe3e26d57/live/sd-1-3936483/2024-03-03-23-25-49_2024-03-04-01-33-11.m3u8",
         type: "application/x-mpegurl"
-      },
-      {
-        src: "//d2zihajmogu5jn.cloudfront.net/sintel/sintel.mp4",
-        type: "video/mp4"
       }
+      // {
+      //   src: "//d2zihajmogu5jn.cloudfront.net/sintel/sintel.mp4",
+      //   type: "video/mp4"
+      // }
     ]
   },
   {

@@ -53,8 +53,13 @@
           <div class="w-[16px] h-[16px] absolute left-[0px] top-[0px]"></div>
           <span class="ml-[7px]"> 我已阅读并同意</span>
         </div>
-        <span class="text-[#0BB1AF] mx-[4px]">相关条款</span> 和
-        <span class="text-[#0BB1AF] mx-[4px]">隐私政策</span>
+        <span class="text-[#0BB1AF] mx-[4px]" @click="toAgreement(1)"
+          >用户协议</span
+        >
+        和
+        <span class="text-[#0BB1AF] mx-[4px]" @click="toAgreement(2)"
+          >隐私政策</span
+        >
       </div>
     </div>
   </div>
@@ -79,6 +84,14 @@ const loading = ref(false);
 let checked = ref("0");
 let username = ref("");
 let password = ref("");
+
+const toAgreement = val => {
+  if (val === 1) {
+    router.push("/user-agreement/index");
+  } else {
+    router.push("/privacy-agreement/index");
+  }
+};
 
 const onClickRadio = () => {
   if (checked.value === "1") {
@@ -106,7 +119,7 @@ const onLogin = async () => {
   loading.value = false;
 
   if (code !== 200) return showToast(data);
-  proxy.$cache.local.setJSON("token", data.token);
+  proxy.$cache.local.set("token", data.token);
   proxy.$cache.local.setJSON("nickname", data.nickname);
   showToast("登录成功");
   router.replace("/my");

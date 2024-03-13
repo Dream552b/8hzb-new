@@ -1,10 +1,10 @@
 <template>
   <div class="example w-full">
-    <!-- <player-playlist
+    <player-playlist
       class="playlist"
       :index="playMediaIndex"
       @update:index="handleMediaChange"
-    /> -->
+    />
     <div class="player-wrapper w-full">
       <div class="top w-full" :class="{ mobile: visitor.isMobileDevice }">
         <video-player
@@ -100,13 +100,13 @@ export default defineComponent({
     const state = shallowRef<VideoPlayerState>();
     const isEnabledCustomControls = shallowRef(true);
     const config = shallowReactive<VideoPlayerProps>({
-      autoplay: false,
+      autoplay: true,
       width: 750,
       height: visitor.isMobileDevice ? 280 : 380,
       volume: 0.8,
       playbackRate: 1,
       playbackRates: playbackRatesOptions[0],
-      controls: false,
+      controls: true,
       fluid: false,
       muted: false,
       loop: false

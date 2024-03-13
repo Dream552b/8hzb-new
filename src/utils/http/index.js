@@ -33,8 +33,8 @@ class Http {
       config => {
         // NProgress.start();
         // 发送请求前，可在此携带 token
-        if (localStorage.getItem('token')) {
-          config.headers['apiToken'] = cache.local.getJSON('token')
+        if (cache.local.get('token')) {
+          config.headers['apiToken'] = cache.local.get('token')
 
         }
         return config;

@@ -1,5 +1,6 @@
 <template>
   <div class="w-full h-[234px] relative truncate">
+    <!-- disablePictureInPicture 取消画中画 -->
     <video-player
       class="w-full h-full"
       :class="[
@@ -7,7 +8,6 @@
         'vjs-big-play-centered',
         { loading: !videoStateObj }
       ]"
-      ref="videoLive"
       :sources="mediaConfig.sources"
       :poster="mediaConfig.poster"
       :tracks="mediaConfig.tracks"
@@ -19,6 +19,7 @@
       ontSupportedMessage="此视频无法播放"
       crossorigin="anonymous"
       playsinline
+      width="375"
       v-model:volume="config.volume"
       v-model:playbackRate="config.playbackRate"
       v-model:controls="config.controls"
@@ -37,7 +38,11 @@
     >
     </video-player>
 
-    <videoStatus v-if="isShowVideoStatus" :videoStatusNum="videoStatusNum" />
+    <!-- 视频状态 -->
+    <videoStatus
+      v-if="isShowVideoStatus && !isBackVideo"
+      :videoStatusNum="videoStatusNum"
+    />
 
     <!-- 自定义状态栏 -->
     <div
@@ -47,24 +52,24 @@
     >
       <div class="flex items-center">
         <div class="w-[4px] h-[4px] bg-[#27c5c3] rounded-[50%] mr-[6px]"></div>
-        <span>直播中</span>
+        <span>{{ isBackVideo ? "回放" : "直播中" }} </span>
       </div>
       <div class="flex items-center">
         <span>{{ props.videoOrigin.name || "" }}</span>
         <svg-icon
           class="text-[#fff] text-[16px] ml-[10px]"
           name="full-icon"
-          @click="
-            videoStateObj.isFullscreen
-              ? videoPlayerObj.exitFullscreen()
-              : videoPlayerObj.requestFullscreen()
-          "
+          @click="onFullVideo"
         />
       </div>
     </div>
 
     <!-- 暂停 播放按钮 -->
-    <div class="w-full h-[234px] absolute left-0 top-0" @click="onClikeVideo">
+    <div
+      class="w-full h-[234px] absolute left-0 top-0"
+      @click="onClikeVideo"
+      v-if="!isBackVideo"
+    >
       <div v-if="videoStateObj">
         <div
           class="play-btn w-[50px] h-[40px] flex justify-center items-center rounded-[6px] z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
@@ -100,26 +105,32 @@ import video_zhCN from "./zh-CN.json";
 import "videojs-flvjs-es6";
 videojs.addLanguage("zh-CN", video_zhCN);
 
-const props = defineProps({ videoOrigin: Object, default: {} });
-
-console.log("props.videoOrigin.url", props.videoOrigin.url);
+const props = defineProps({
+  videoOrigin: {
+    type: Object,
+    default: {}
+  },
+  // 回放
+  isBackVideo: {
+    type: Boolean,
+    default: false
+  }
+});
 
 const mediaConfig = ref({
   sources: props.videoOrigin.url,
   poster: "",
   tracks: ""
 });
-const playbackRatesOptions = [
-  [1, 2, 3],
-  [0.5, 1.5, 2.5]
-];
+// const playbackRatesOptions = [[1, 2, 3], (0.5, 1.5, 2.5)];
+const playbackRatesOptions = [[1, 2, 3], (0.5, 1.5, 2.5)];
 const config = ref({
   autoplay: true,
   height: 234,
   volume: 0.8,
   playbackRate: 1,
-  // playbackRates: playbackRatesOptions[0],
-  controls: false,
+  playbackRates: playbackRatesOptions[0],
+  controls: props.isBackVideo ? true : false,
   fluid: false,
   muted: false,
   loop: false
@@ -140,6 +151,15 @@ const onClikeVideo = () => {
   isShowBox.value = !isShowBox.value;
 };
 
+// 全屏
+const onFullVideo = () => {
+  videoStateObj.value.isFullscreen
+    ? videoPlayerObj.value.exitFullscreen()
+    : videoPlayerObj.value.requestFullscreen();
+
+  if (!videoStateObj.value.playing) videoPlayerObj.value.play();
+};
+
 const onIsPlay = () => {
   // @click="state.playing ? player.pause() : player.play()"
 
@@ -152,58 +172,57 @@ const handleMounted = payload => {
   // 视频对象
   videoStateObj.value = payload.state;
   videoPlayerObj.value = payload.player;
-  // payload.player.play();
-  console.log("handleMounted=====================视频对象加载完成", payload);
+  // console.log("handleMounted=====================视频对象加载完成", payload);
 };
 
 const handleEvent = log => {
-  console.log("handleEvent", log);
+  // console.log("handleEvent", log);
 };
 
 //寻找中
 const handleSeeking = log => {
-  console.log("handleSeeking 寻找中*****", log);
+  // console.log("handleSeeking 寻找中*****", log);
 };
 
 const handleError = log => {
   videoStatusNum.value = 0;
   isShowVideoStatus.value = true;
-  console.log("handleError", log);
+  // console.log("handleError", log);
 };
 const handleReadonly = log => {
-  console.log("handleReadonly", log);
+  // console.log("handleReadonly", log);
 };
 
 const handleMetaloaded = log => {
-  console.log("handleMetaloaded", log);
+  // console.log("handleMetaloaded", log);
 };
 
 const handleStopped = log => {
-  console.log("handleStopped", log);
+  // console.log("handleStopped", log);
 };
 const handlePaused = log => {
-  console.log("handlePaused", log);
+  // console.log("handlePaused", log);
 };
 
 //开始播放
 const handlePlaying = log => {
-  console.log("handlePlaying 开始播放", log);
+  // console.log("handlePlaying 开始播放", log);
   isShowVideoStatus.value = false;
 };
 //播放
 const handlePlay = log => {
-  console.log("handlePlay----播放", log);
+  // console.log("handlePlay----播放", log);
   // isShowVideoStatus.value = false;
 };
 
 //可以播放，但中途可能因为加载而暂停
 const handleCanplay = log => {
-  console.log("handleCanplay----可以播放，但中途可能因为加载而暂停", log);
+  // console.log("handleCanplay----可以播放，但中途可能因为加载而暂停", log);
   isShowVideoStatus.value = false;
 };
 
 const handleLoadstart = log => {
-  console.log("handleLoadstart 视频加载中", log);
+  // console.log("handleLoadstart 视频加载中", log);
   videoStatusNum.value = 1;
 
   // console.log("videoPlayerObj.value", videoPlayerObj.value);
@@ -227,6 +246,10 @@ watch(
     width: 84px !important;
     display: none;
     // height: 44px !important;
+  }
+
+  :deep(.vjs-picture-in-picture-control) {
+    display: none;
   }
 }
 

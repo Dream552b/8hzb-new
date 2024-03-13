@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { socket, socketState } from "@/utils/socket";
+import MarqueeText from "vue-marquee-text-component";
 
 const props = defineProps({
   advInfo: {
@@ -14,8 +15,16 @@ const props = defineProps({
 });
 const zhong = ref(false); // 中场
 const isScrollable = ref(true);
+
+const noticeBarRef = ref(null);
+const paused = ref(false);
+
 const onClickBar = () => {
-  isScrollable.value = !isScrollable.value;
+  paused.value = !paused.value;
+  // console.log("noticeBarRef.value", noticeBarRef.value);
+
+  // noticeBarRef.value?.reset();
+  // isScrollable.value = !isScrollable.value;
 };
 
 onMounted(() => {
@@ -23,7 +32,7 @@ onMounted(() => {
   watch(
     () => socketState.matchStatusIDChange,
     obj => {
-      console.log("obj 中场", obj, props.matchID);
+      // console.log("obj 中场", obj, props.matchID);
       if (obj.matchID === props.matchID) {
         if (obj.sportsType === 1) {
           //足球 足球：中场3，下半场4
@@ -33,8 +42,7 @@ onMounted(() => {
           zhong.value = obj.statusID === 5;
         }
       }
-    },
-    { immediate: true }
+    }
   );
 });
 </script>
@@ -43,16 +51,17 @@ onMounted(() => {
   <div class="w-full flex flex-col absolut z-10 top-0 left-0">
     <!-- 文字滚动 -->
     <div
-      class="w-[88%] self-end wrap-bar"
+      class="w-[100%] self-end flex flex-col wrap-bar"
       @click="onClickBar"
       v-if="advInfo.content"
     >
-      <van-notice-bar
-        :scrollable="isScrollable"
-        :text="advInfo.content"
-        background="transparent"
-        color="#fff"
-      />
+      <div
+        class="w-[90%] h-[40px] px-[10px] self-end text-[#fff] flex items-center"
+      >
+        <MarqueeText :duration="25" :paused="paused">
+          {{ advInfo.content }}</MarqueeText
+        >
+      </div>
     </div>
     <!-- 宣传图 -->
     <!-- midfieldDisplay = 1 中场才显示 -->
@@ -85,6 +94,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .wrap-bar {
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.3);
 }
 </style>

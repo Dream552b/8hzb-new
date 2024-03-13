@@ -4,7 +4,7 @@ import { http } from "@/utils/http";
 // 赛事列表
 export function getHotCompetitionList(params) {
     return http.request({
-        url: "/api/v2/hotCompetition/list",
+        url: "/v2/hotCompetition/list",
         method: "get",
         params
     });
@@ -13,7 +13,7 @@ export function getHotCompetitionList(params) {
 // 比赛列表
 export function getMatchList(params) {
     return http.request({
-        url: "/api/v2/match/list",
+        url: "/v2/match/list",
         method: "get",
         params
     });
@@ -22,7 +22,7 @@ export function getMatchList(params) {
 // 比赛详情
 export function getMatchInfo(params) {
     return http.request({
-        url: "/api/v2/match/info",
+        url: "/v2/match/info",
         method: "get",
         params
     });
@@ -31,7 +31,7 @@ export function getMatchInfo(params) {
 // 广告详情
 export function getAdvertisement(params) {
     return http.request({
-        url: "/api/v2/advertisement/info",
+        url: "/v2/advertisement/info",
         method: "get",
         params
     });

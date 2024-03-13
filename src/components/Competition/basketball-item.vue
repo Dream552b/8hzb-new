@@ -82,14 +82,16 @@
             <div
               class="flex justify-end font-bold leading-[14px]"
               :class="
-                gameItem.statusID === 1 ? ' text-[#999999]' : ' text-[#58C6C6]'
+                gameItem.statusID === 1 || gameItem.statusID === 10
+                  ? ' text-[#999999]'
+                  : ' text-[#58C6C6]'
               "
             >
               <img
                 class="w-[12px] h-[12px] mr-[4px]"
                 src="@/assets/icon-zhubo-no.png"
                 alt=""
-                v-if="gameItem.statusID === 1"
+                v-if="gameItem.statusID === 1 || gameItem.statusID === 10"
               />
               <img
                 v-else
@@ -280,6 +282,8 @@ const { proxy } = getCurrentInstance();
 
 // 赛果不显示置顶
 const isShowTop = ref(route.path === "/competition-results");
+// 回放按钮
+const isShowFang = ref(proxy.$cache.session.getJSON("tabsIndex") === 4);
 
 const onClikeTop = item => {
   let topData = proxy.$cache.session.getJSON("topData") || [];

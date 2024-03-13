@@ -58,17 +58,22 @@ export default defineConfig(({ mode }) => {
       // doc: https://github.com/pengzhanbo/vite-plugin-mock-dev-server
       proxy: {
         "^/dev-api": {
-          // target: "http://192.168.3.32:9000",
+          // target: "http://192.168.3.32:9000", 
           target: "https://hg.8hzb.com",
           changeOrigin: true,
-          rewrite: path => path.replace(/^\/dev-api/, "")
+          rewrite: path => path.replace(/^\/dev-api/, "/api")
         },
         '/socketIo/': {
           target: 'http://192.168.3.32:9000',
+          // target: 'https://hg.8hzb.com',
           changeOrigin: true,
           secure: false,
           ws: true
-        }
+        },
+        '/chatRoom': {
+          target: 'http://192.168.3.248:5174',
+          changeOrigin: true,
+        },
       }
     },
     build: {

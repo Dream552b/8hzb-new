@@ -10,7 +10,7 @@ import { showToast } from "vant";
 
 let userInfo = ref(proxy.$cache.local.getJSON("userInfo") || {});
 
-const getToken = ref(proxy.$cache.local.getJSON("token") || "");
+const getToken = ref(proxy.$cache.local.get("token") || "");
 
 const onLogin = () => {
   router.push({

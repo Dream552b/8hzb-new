@@ -99,11 +99,27 @@ const routes = [
         }
       },
       {
+        path: "user-agreement/index",
+        name: "UserAgreement",
+        component: () => import("@/views/login/user-agreement.vue"),
+        meta: {
+          title: "用户协议",
+        }
+      },
+      {
+        path: "privacy-agreement/index",
+        name: "PrivacyAgreement",
+        component: () => import("@/views/login/privacy-agreement.vue"),
+        meta: {
+          title: "隐私政策",
+        }
+      },
+      {
         path: "videojs-player/index",
         name: "Videojs-player",
         component: () => import("@/views/videojs-player/01-advanced-player/index.vue"),
         meta: {
-          title: "登录",
+          title: "测试视频",
         }
       }
     ],

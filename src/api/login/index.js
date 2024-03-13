@@ -4,7 +4,7 @@ import { http } from "@/utils/http";
 // 登录
 export function login(data) {
     return http.request({
-        url: "/api/v2/user/login",
+        url: "/v2/user/login",
         method: "post",
         data,
         headers: {
@@ -16,7 +16,7 @@ export function login(data) {
 // 用户详情
 export function getUserInfo(params) {
     return http.request({
-        url: "/api/v2/user/info",
+        url: "/v2/user/info",
         method: "get",
         params
     });

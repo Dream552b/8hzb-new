@@ -7,7 +7,7 @@
     /> -->
 
     <img
-      class="w-[74px] h-[26px]"
+      class="w-[76px] h-[24px]"
       alt="logo"
       src="@/assets/img-logo.png"
       @click="getMenuList"

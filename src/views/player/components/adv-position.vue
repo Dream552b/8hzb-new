@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from "vue";
 import { socket, socketState } from "@/utils/socket";
 import MarqueeText from "vue-marquee-text-component";
 
+const emits = defineEmits(["handlanGetMatchInfo"]);
 const props = defineProps({
   advInfo: {
     type: Object,
@@ -37,9 +38,19 @@ onMounted(() => {
         if (obj.sportsType === 1) {
           //足球 足球：中场3，下半场4
           zhong.value = obj.statusID === 3;
+
+          if (props.statusID == 8) {
+            // 比赛结束刷新详情接口
+            emits("handlanGetMatchInfo");
+          }
         } else {
           //篮球 篮球：第二节完（中场）5，第三节6（下半场）
           zhong.value = obj.statusID === 5;
+
+          if (props.statusID == 10) {
+            // 比赛结束刷新详情接口
+            emits("handlanGetMatchInfo");
+          }
         }
       }
     }
@@ -66,7 +77,7 @@ onMounted(() => {
     <!-- 宣传图 -->
     <!-- midfieldDisplay = 1 中场才显示 -->
     <div
-      class="mt-[10px] flex absolute left-[10px] top-[40px]"
+      class="mt-[10px] flex absolute left-[10px] top-[26px]"
       v-if="!advInfo.midfieldDisplay || zhong"
     >
       <img
@@ -80,8 +91,8 @@ onMounted(() => {
     <!-- 二维码 -->
     <div
       v-if="advInfo.qrcodeImageArr"
-      class="absolute top-[168px]"
-      :class="advInfo.position === 1 ? 'left-[10px]' : 'right-[10px]'"
+      class="absolute top-[152px]"
+      :class="advInfo.position === 1 ? 'left-[6px]' : 'right-[10px]'"
     >
       <img
         :src="advInfo.qrcodeImageArr[0]"
@@ -94,6 +105,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .wrap-bar {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
 }
 </style>

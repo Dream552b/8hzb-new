@@ -45,4 +45,4 @@ export const BASKETBALLSTYLE_STATUS_ARR = [2, 3, 4, 5, 6, 7, 8, 9]
 
 /** 直播中状态 */
 export const F_LIVE_STATUS = [2, 3, 4, 5, 7]
-export const B_LIVE_STATUS = [2, 4, 6, 8, 9]
+export const B_LIVE_STATUS = [2, 3, 4, 5, 6, 7, 8, 9]

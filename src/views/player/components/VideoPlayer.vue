@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full h-[234px] relative truncate">
-    <!-- disablePictureInPicture 取消画中画 -->
+  <div class="w-full h-[216px] relative truncate">
+    <!-- disablePictureInPicture 取消画中画 h-[234px] -->
     <video-player
       class="w-full h-full"
       :class="[
@@ -40,27 +40,31 @@
 
     <!-- 视频状态 -->
     <videoStatus
-      v-if="isShowVideoStatus && !isBackVideo"
+      v-show="isShowVideoStatus && !isBackVideo"
       :videoStatusNum="videoStatusNum"
     />
 
     <!-- 自定义状态栏 -->
-    <div
-      class="gradient-box fade-in-out text-[#fff] w-full absolute z-[100] bottom-0 flex justify-between items-center px-[20px] text-[10px]"
-      :class="isShowBox ? 'translated' : ''"
-      @click.stop=""
-    >
-      <div class="flex items-center">
-        <div class="w-[4px] h-[4px] bg-[#27c5c3] rounded-[50%] mr-[6px]"></div>
-        <span>{{ isBackVideo ? "回放" : "直播中" }} </span>
-      </div>
-      <div class="flex items-center">
-        <span>{{ props.videoOrigin.name || "" }}</span>
-        <svg-icon
-          class="text-[#fff] text-[16px] ml-[10px]"
-          name="full-icon"
-          @click="onFullVideo"
-        />
+    <div class="w-full h-[212px] absolute top-0 truncate" v-if="!isBackVideo">
+      <div
+        class="gradient-box fade-in-out text-[#fff] w-full absolute z-[100] bottom-0 flex justify-between items-center px-[20px] text-[10px]"
+        :class="isShowBox ? 'translated' : ''"
+        @click.stop=""
+      >
+        <div class="flex items-center">
+          <div
+            class="w-[4px] h-[4px] bg-[#27c5c3] rounded-[50%] mr-[6px]"
+          ></div>
+          <span>{{ isBackVideo ? "回放" : "直播中" }} </span>
+        </div>
+        <div class="flex items-center">
+          <span>{{ props.videoOrigin.name || "" }}</span>
+          <svg-icon
+            class="text-[#fff] text-[16px] ml-[10px]"
+            name="full-icon"
+            @click="onFullVideo"
+          />
+        </div>
       </div>
     </div>
 
@@ -88,6 +92,13 @@
             name="icon-stop-play"
           />
         </div>
+      </div>
+
+      <div
+        v-if="vanloading"
+        class="w-[20px] h-[40px] z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
+      >
+        <van-loading type="spinner" size="28px" />
       </div>
     </div>
   </div>
@@ -131,7 +142,7 @@ const config = ref({
   playbackRate: 1,
   playbackRates: playbackRatesOptions[0],
   controls: props.isBackVideo ? true : false,
-  fluid: false,
+  fluid: true, // 铺满
   muted: false,
   loop: false
 });
@@ -146,6 +157,8 @@ const isShowVideoStatus = ref(true);
 
 const playerSave = ref(null);
 const isShowBox = ref(false);
+const vanloading = ref(true);
+const saveTimeStamp = ref(null);
 
 const onClikeVideo = () => {
   isShowBox.value = !isShowBox.value;
@@ -160,8 +173,38 @@ const onFullVideo = () => {
   if (!videoStateObj.value.playing) videoPlayerObj.value.play();
 };
 
+// 暂停 播放
 const onIsPlay = () => {
-  // @click="state.playing ? player.pause() : player.play()"
+  // 生成随机参数
+  var timestamp = Date.now();
+
+  console.log("timestamp", timestamp);
+  console.log("saveTimeStamp.value", saveTimeStamp.value);
+
+  if (!videoStateObj.value.playing) {
+    console.log(
+      "timestamp - saveTimeStamp.value",
+      timestamp - saveTimeStamp.value
+    );
+
+    // 计算时间戳之间的毫秒数差
+    var timeDiff = Math.abs(timestamp - saveTimeStamp.value);
+    // 将毫秒数转换为秒数
+    var secondsDiff = Math.floor(timeDiff / 1000);
+    console.log("secondsDiff", secondsDiff);
+
+    // 小于10秒不重新拉流
+    if (saveTimeStamp.value && secondsDiff > 8) {
+      let url = mediaConfig.value.sources.split("?")[0];
+      url = url + "?timestamp=" + timestamp;
+
+      videoStatusNum.value = 1;
+      isShowVideoStatus.value = true;
+      mediaConfig.value.sources = url;
+    }
+  } else {
+    saveTimeStamp.value = timestamp;
+  }
 
   videoStateObj.value.playing
     ? videoPlayerObj.value.pause()
@@ -187,7 +230,9 @@ const handleSeeking = log => {
 const handleError = log => {
   videoStatusNum.value = 0;
   isShowVideoStatus.value = true;
-  // console.log("handleError", log);
+  vanloading.value = false;
+
+  console.log("handleError", log);
 };
 const handleReadonly = log => {
   // console.log("handleReadonly", log);
@@ -207,7 +252,7 @@ const handlePaused = log => {
 //开始播放
 const handlePlaying = log => {
   // console.log("handlePlaying 开始播放", log);
-  isShowVideoStatus.value = false;
+  vanloading.value = false;
 };
 //播放
 const handlePlay = log => {
@@ -215,18 +260,20 @@ const handlePlay = log => {
   // isShowVideoStatus.value = false;
 };
 
-//可以播放，但中途可能因为加载而暂停
+//可以播放，但中途可能因为加载而暂停; 直播画面出现了
 const handleCanplay = log => {
   // console.log("handleCanplay----可以播放，但中途可能因为加载而暂停", log);
+  // isShowVideoStatus.value = false;
+  vanloading.value = false;
+  // console.log("可以播放，但中途可能因为加载而暂停; 直播画面出现了");
   isShowVideoStatus.value = false;
 };
 
 const handleLoadstart = log => {
   // console.log("handleLoadstart 视频加载中", log);
-  videoStatusNum.value = 1;
 
-  // console.log("videoPlayerObj.value", videoPlayerObj.value);
-  // videoPlayerObj.value.play();
+  videoStatusNum.value = 1;
+  vanloading.value = true;
 };
 
 watch(
@@ -235,6 +282,7 @@ watch(
     console.log("val-----", val);
 
     mediaConfig.value.sources = val;
+    vanloading.value = true;
   }
 );
 </script>
@@ -245,6 +293,12 @@ watch(
   :deep(.vjs-big-play-button) {
     width: 84px !important;
     display: none;
+    // height: 44px !important;
+  }
+  :deep(.vjs-loading-spinner) {
+    width: 34px !important;
+    height: 34px !important;
+    display: none !important;
     // height: 44px !important;
   }
 

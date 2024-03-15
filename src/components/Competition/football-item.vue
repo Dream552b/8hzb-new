@@ -110,7 +110,9 @@
                 src="@/assets/icon-zhubo.png"
                 alt=""
               />
-              <span>{{ gameItem.anchorName }}</span>
+              <span class="van-ellipsis max-w-[90px]">{{
+                gameItem.anchorName
+              }}</span>
             </div>
           </div>
         </div>

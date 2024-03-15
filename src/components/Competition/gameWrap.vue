@@ -666,7 +666,7 @@ const disStyleClose = id => {
 onMounted(() => {
   queryParams.value.page = 0;
 
-  // 比分，时间更新
+  // 比分，时间, 比赛状态更新
   watch(
     () => socketState.matchLive,
     () => {

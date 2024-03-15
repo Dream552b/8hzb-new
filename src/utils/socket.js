@@ -5,11 +5,12 @@ export const socketState = reactive({
     connected: false,
     matchOdds: [],
     matchLive: [],
-    matchStatusIDChange: {}
+    matchStatusIDChange: {},
+    matchRoomOnlineUserNum: 0
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = process.env.NODE_ENV === "production" ? undefined : "/socketIo";
+const URL = process.env.NODE_ENV === "production" ? "/socketIo" : "/socketIo";
 
 export const socket = io("", { path: URL });
 
@@ -28,13 +29,14 @@ socket.on("disconnect", () => {
 socket.on("matchOdds", (...args) => {
     if (args[0].code !== 200) return
     socketState.matchOdds = args[0].data
-    // console.log('matchOdds', args[0]);
+    // console.log('matchOdds',args);
 
 });
 
 socket.on("matchLive", (...args) => {
     if (args[0].code !== 200) return
     socketState.matchLive = args[0].data
+
     // console.log('matchLive', args);
 
 });
@@ -42,10 +44,18 @@ socket.on("matchLive", (...args) => {
 // 中场
 socket.on("matchStatusIDChange", (...args) => {
     console.log('中场matchStatusIDChange', args);
-
     if (args[0].code !== 200) return
     socketState.matchStatusIDChange = args[0].data
     // console.log('matchLive', args);
+
+});
+
+
+// 在线人数
+socket.on("matchRoomOnlineUser", (...args) => {
+    console.log('matchRoomOnlineUser', args);
+    if (args[0].code !== 200) return
+    socketState.matchRoomOnlineUserNum = args[0].data
 
 });
 

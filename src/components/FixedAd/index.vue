@@ -2,20 +2,20 @@
   <div
     class="fixed z-[90] flex flex-col items-center bottom-[100px] right-[26px]"
   >
-    <div @click="onDownload">
-      <img class="w-[34px] h-[34px]" src="@/assets/icon-download.png" alt="" />
+    <div @click="onDownload" class="w-full flex flex-col items-center">
+      <img class="w-[54px] h-[54px]" src="@/assets/icon-download.png" alt="" />
       <div
-        class="text-[6px] text-center rounded-[10px] bg-[#333535] text-[#fff] px-[2px] my-[-6px]"
+        class="w-[80%] text-[8px] text-center rounded-[10px] bg-[#333535] text-[#fff] my-[-6px]"
       >
         下载APP
       </div>
     </div>
     <div
-      class="mt-[12px] bg-[#66D8D7] rounded-[2px] px-[6px] py-[6px] flex flex-col items-center in-box shadow-[1px_4px_4px_0px_rgba(0,0,0,0.25)]"
+      class="w-[34px] h-[34px] mt-[18px] bg-[#66D8D7] rounded-[2px] flex flex-col items-center justify-center shadow-[1px_4px_4px_0px_rgba(0,0,0,0.25)]"
     >
-      <img class="w-[12px] h-[12px]" src="@/assets/icon-top-f.png" alt="" />
+      <img class="w-[16px] h-[16px]" src="@/assets/icon-top-f.png" alt="" />
 
-      <van-back-top right="8.4vw" bottom="12.5vh" class="custom" offset="0">
+      <van-back-top right="9vw" bottom="26.5vw" class="custom" offset="0">
         <span></span>
       </van-back-top>
 
@@ -52,13 +52,11 @@ const onDownload = () => {
 </script>
 
 <style lang="less" scoped>
-.in-box {
-  display: inline-block;
-}
-
 :deep(.van-back-top) {
   color: #000;
   height: 25px;
+  // width: 100px;
   box-shadow: none !important;
+  right: 40px !important;
 }
 </style>

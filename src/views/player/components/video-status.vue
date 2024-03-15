@@ -13,7 +13,7 @@ const props = defineProps({
 <template>
   <div>
     <div
-      class="text-[10px] text-[#fff] w-full h-full flex flex-col justify-center items-center z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
+      class="w-[125px] text-[10px] text-[#fff] flex flex-col justify-center items-center z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
     >
       <img
         class="w-[125px] h-[30px] mb-[6px]"

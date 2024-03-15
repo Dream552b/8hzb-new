@@ -6,9 +6,9 @@
 
     <!-- top video -->
     <div>
-      <!-- bg-[#002200] -->
-      <div class="video-wrap relative h-[234px] bg-[#000]">
-        <div class="h-full" v-if="matchInfo.sportsType">
+      <!-- bg-[#002200]  h-[234px] bg-[#000] -->
+      <div class="video-wrap relative h-[212px]">
+        <div class="h-full bg-[#000]" v-if="matchInfo.sportsType">
           <notStarted
             :matchInfo="matchInfo"
             @onPlayback="onPlayback"
@@ -34,7 +34,10 @@
             class="absolute top-0 left-0 z-[100]"
             :matchID="queryParams.matchID"
             :advInfo="advInfo"
+            @handlanGetMatchInfo="handlanGetMatchInfo"
           />
+          <!-- 在线人数 管理员才显示-->
+          <online v-if="userInfo.roleID === 16" :lineNum="lineNum" />
         </div>
       </div>
 
@@ -156,10 +159,9 @@
       </div>
     </div>
 
-    <div class="iframe-wrap flex-1">
+    <div class="iframe-wrap flex-1" style="height: 100%; flex: 1">
       <iframe
-        width="100%"
-        height="100%"
+        style="height: 100%; width: 100%"
         :src="iframeUrl"
         frameborder="0"
       ></iframe>
@@ -179,10 +181,20 @@ import {
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
-import { nextTick, ref, onMounted, reactive, toRefs, onUnmounted } from "vue";
+import {
+  nextTick,
+  ref,
+  onMounted,
+  reactive,
+  toRefs,
+  onUnmounted,
+  watch,
+  getCurrentInstance
+} from "vue";
 import { socket, socketState } from "@/utils/socket";
 import { getMatchInfo, getAdvertisement } from "@/api/game";
 import { secondsToMinutesAndSeconds } from "@/utils/time";
+import online from "./components/online.vue";
 // import videoCom from "./videoCom.vue";
 import advPosition from "./components/adv-position.vue";
 import notStarted from "./components/not-started.vue";
@@ -192,9 +204,15 @@ import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
+const { proxy } = getCurrentInstance();
+
+let userInfo = ref(proxy.$cache.local.getJSON("user") || {});
+
+const lineNum = ref(0); //在线人数
+
 const isShow = ref(true);
 const iframeUrl = ref(
-  `https://chat.8hzb.chat/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
+  `https://8hzb.chat/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
 );
 const VideoPlayerRef = ref();
 const player = ref(null);
@@ -260,6 +278,9 @@ const onPlayback = item => {
 
 // 视频源处理
 const videoOriginDis = disData => {
+  // 生成随机参数
+  var timestamp = Date.now();
+
   // 主播源处理
   if (disData.matchLiveInfo.playUrl) {
     // flv 换成 m3u8； 只是.后面的格式不同
@@ -268,15 +289,20 @@ const videoOriginDis = disData => {
         0,
         disData.matchLiveInfo.playUrl.length - 4
       ) + ".m3u8";
+
     let obj = {
       name: disData.matchLiveInfo.anchorName,
-      url: disURL
+      url: disURL + "?timestamp=" + timestamp
     };
     originData.value.push(obj);
   }
 
   let arr = ["pullurl1", "pullurl2", "pullurl3"];
-  let nameObj = { pullurl1: "标清", pullurl2: "高清", pullurl3: "蓝光" };
+  let nameObj = {
+    pullurl1: "高清",
+    pullurl2: "中文蓝光",
+    pullurl3: "英文蓝光"
+  };
 
   arr.forEach((item, index) => {
     if (disData[item]) {
@@ -285,8 +311,12 @@ const videoOriginDis = disData => {
         disData[item].substring(0, disData[item].length - 4) + ".m3u8";
       let obj = {
         name: nameObj[item],
-        url: disURL
+        url: disURL + "?timestamp=" + timestamp
       };
+      // if (index === 0) {
+      //   obj.name = "8H主播";
+      //   obj.url = "https://8hzb.xyz/8hzb/1710310529583.m3u8";
+      // }
       originData.value.push(obj);
     }
   });
@@ -307,12 +337,104 @@ const onObjDisScore = dataObj => {
   return dataObj;
 };
 
+// ws比分处理
+const onWsDisScore = data => {
+  if (data.sportsType === 1) {
+    //足球
+    let id = data.score[0];
+    let status = data.score[1];
+    let homeScores = data.score[2];
+    let awayScores = data.score[3];
+    let liveTime = data.score[4];
+    let beizhu = data.score[5];
+
+    let v_item = matchInfo.value;
+
+    if (id === v_item.matchID) {
+      console.log("socketState.matchLive 足球 状态更新", socketState.matchLive);
+      if (v_item.homeScores[0] !== homeScores[0]) {
+        v_item.home_bgActive = true;
+      }
+      if (v_item.awayScores[0] !== awayScores[0]) {
+        v_item.away_bgActive = true;
+      }
+
+      v_item.homeScores = homeScores;
+      v_item.awayScores = awayScores;
+
+      v_item.statusID = status;
+
+      v_item.liveTime = liveTime;
+      // disStyleClose(id);
+    }
+  }
+
+  if (data.sportsType === 2) {
+    //篮球
+    let id = data.score[0];
+    let status = data.score[1];
+    let kaiqiuTime = data.score[2]; //小节剩余时间(秒) - int"
+    let homeScores = data.score[3];
+    let awayScores = data.score[4];
+
+    let v_item = matchInfo.value;
+
+    if (id === v_item.matchID) {
+      console.log("socketState.matchLive篮球 状态更新", socketState.matchLive);
+      const o_sumAway = v_item.awayScores.reduce((acc, val) => acc + val, 0);
+      const o_sumHome = v_item.homeScores.reduce((acc, val) => acc + val, 0);
+      const sumAway = awayScores.reduce((acc, val) => acc + val, 0);
+      const sumHome = homeScores.reduce((acc, val) => acc + val, 0);
+
+      if (sumHome != o_sumHome) {
+        v_item.home_bgActive = true;
+      }
+      if (sumAway != o_sumAway) {
+        v_item.away_bgActive = true;
+      }
+
+      v_item.homeScores = homeScores;
+      v_item.awayScores = awayScores;
+
+      v_item.statusID = status;
+
+      v_item.liveTime = kaiqiuTime;
+      v_item.basketball_time = secondsToMinutesAndSeconds(v_item.liveTime);
+
+      v_item.away_basketball_score = sumAway;
+      v_item.home_basketball_score = sumHome;
+
+      // disStyleClose(id);
+    }
+  }
+};
+
 handlanGetMatchInfo();
 onGetAdvertisement();
 
 onMounted(() => {
   // 连接socket房间
   socket.emit("joinMatchRoom", { matchID: Number(queryParams.value.matchID) });
+
+  // 比分，时间, 比赛状态更新
+  watch(
+    () => socketState.matchLive,
+    () => {
+      socketState.matchLive.map(item => {
+        onWsDisScore(item);
+      });
+    },
+    { immediate: true }
+  );
+
+  // 在线人数
+  watch(
+    () => socketState.matchRoomOnlineUserNum,
+    val => {
+      lineNum.value = val;
+    },
+    { immediate: true }
+  );
 });
 onUnmounted(() => {
   // 退出socket房间

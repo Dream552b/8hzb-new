@@ -115,9 +115,9 @@ const routes = [
         }
       },
       {
-        path: "videojs-player/index",
-        name: "Videojs-player",
-        component: () => import("@/views/videojs-player/01-advanced-player/index.vue"),
+        path: "test/index/:sportsType/:matchID",
+        name: "Test-player",
+        component: () => import("@/views/player/test-chat.vue"),
         meta: {
           title: "测试视频",
         }

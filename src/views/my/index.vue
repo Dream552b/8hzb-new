@@ -8,7 +8,7 @@ const router = useRouter();
 const { proxy } = getCurrentInstance();
 import { showToast } from "vant";
 
-let userInfo = ref(proxy.$cache.local.getJSON("userInfo") || {});
+let userInfo = ref(proxy.$cache.local.getJSON("user") || {});
 
 const getToken = ref(proxy.$cache.local.get("token") || "");
 
@@ -21,7 +21,7 @@ const onLogin = () => {
 const onGetUserInfo = async () => {
   let { code, data } = await getUserInfo();
 
-  proxy.$cache.local.setJSON("userInfo", data);
+  proxy.$cache.local.setJSON("user", data);
 
   userInfo.value = data;
 };

@@ -214,7 +214,7 @@ const isShow = ref(true);
 
 const currentDomain = window.location.hostname; //当前域名
 const iframeUrl = ref(
-  `${currentDomain}/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
+  `https://${currentDomain}/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
 );
 const VideoPlayerRef = ref();
 const player = ref(null);

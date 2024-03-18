@@ -1,15 +1,13 @@
-name: Build and Deploy
-permissions:
-  contents: write
-on:
-  push:
-    branches:
-      - master
+name: build
+on: 
+  push: 
+    branches: 
+      - main-pro # 这里表示push到main分支就会触发流程
 jobs:
-  deploy:
-    concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-20.04
     steps:
+      # 这是github官方的一个action，用于clone该仓库的源码到工作流中，
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
@@ -24,16 +22,22 @@ jobs:
         with:
           version: 7
 
-      - name: Deploy 🔧
+      - name: Build
         run: |
-          pnpm install --no-frozen-lockfile
-          sed -i "s#VITE_PUBLIC_PATH = /#VITE_PUBLIC_PATH = /vue3-h5-template/#g" $(pwd)/.env.production
-          pnpm build
-
+          pnpm install --no-frozen-lockfile  # 安装依赖
+          pnpm run build  # 执行打包
+  
+      # 连接到ssh，并且做一个拷贝操作的action
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: cross-the-world/scp-pipeline@master
+        env:
+          WELCOME: "ssh scp ssh pipelines"
+          LASTSSH: "Doing something after copying"
         with:
-          branch: gh-pages
-          folder: dist
-          clean: true
-          
+         host: ${{ secrets.DR_HOST }}
+         user: ${{ secrets.DR_USER }}
+         pass: ${{ secrets.DR_PASS }}
+         connect_timeout: 10s
+         local: './dist/*' # 这里是下一步要创建的vue项目构建完成后的静态资源路径
+         remote: /root/8h-h5 # 这里是 step1 中，在服务器上创建用于存放静态资源的文件夹
+

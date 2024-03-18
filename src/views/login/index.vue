@@ -15,7 +15,7 @@
       <van-form @submit="onLogin">
         <van-field
           v-model="username"
-          placeholder="请输入用户号1"
+          placeholder="请输入用户号"
           class="myField rounded-[20px]"
           :rules="[{ required: true, message: '请输入用户名' }]"
         />

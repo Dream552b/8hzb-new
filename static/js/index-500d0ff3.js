@@ -1,0 +1,1 @@
+import{co as e}from"./index-eb6d4032.js";function r(t){return e.request({url:"/v2/user/login",method:"post",data:t,headers:{"Content-Type":"application/json; charset=utf-8"}})}function n(t){return e.request({url:"/v2/user/info",method:"get",params:t})}export{n as g,r as l};

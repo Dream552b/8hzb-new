@@ -233,11 +233,11 @@
         </div>
       </div>
 
-      <img
+      <!-- <img
         class="w-[38px] h-[23px] ml-[8px] absolute right-[0px] bottom-[0px]"
         src="@/assets/icon-zhuagnshi.png"
         alt=""
-      />
+      /> -->
 
       <div v-if="!isShowTop">
         <img

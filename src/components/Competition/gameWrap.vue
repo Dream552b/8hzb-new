@@ -252,14 +252,18 @@ const onGetMatchList = async () => {
         ? -2
         : queryParams.value.type
   };
-
   const { data, code } = await getMatchList(params);
+
   if (refreshing.value) {
     reDate();
   }
   refreshing.value = false;
   loading.value = false;
-  if (code !== 200) return;
+  if (code !== 200) {
+    finished.value = true;
+    finishedText.value = data;
+    return;
+  }
 
   // 第一页没有数据
   if (queryParams.value.page === 1 && !data.records) {
@@ -361,6 +365,7 @@ const isUserTopDate = datalist => {
       }
     }
   }
+
   let idsToRemoveUser = uArr.map(item => item.id); // 获取arr2中的id数组
   // 没置顶的数据
   let filteredArrUser = odata.filter(
@@ -435,6 +440,12 @@ const onWsDisScore = data => {
     Object.entries(timeObjData.value).forEach(([key, value]) => {
       value.map((v_item, v_index) => {
         if (id === v_item.id) {
+          // 去除列表结束的数据
+          if (status === 8) {
+            timeObjData.value[key].splice(v_index, 1);
+            return;
+          }
+
           if (v_item.homeScores[0] !== homeScores[0]) {
             v_item.home_bgActive = true;
           }
@@ -465,6 +476,12 @@ const onWsDisScore = data => {
     Object.entries(timeObjData.value).forEach(([key, value]) => {
       value.map((v_item, v_index) => {
         if (id === v_item.id) {
+          // 去除列表结束的数据
+          if (status === 10) {
+            timeObjData.value[key].splice(v_index, 1);
+            return;
+          }
+
           const o_sumAway = v_item.awayScores.reduce(
             (acc, val) => acc + val,
             0
@@ -553,10 +570,10 @@ const onWsDisSun = data => {
 // TODO:测试
 const test = () => {
   let data = {
-    sportsType: 1,
+    sportsType: 2,
     score: [
-      3966161,
-      2,
+      3739784,
+      10,
       [2, 2, 0, 0, 3, 0, 0],
       [0, 0, 0, 1, 0, 0, 0],
       1709553615,
@@ -576,6 +593,11 @@ const test = () => {
     Object.entries(timeObjData.value).forEach(([key, value]) => {
       value.map((v_item, v_index) => {
         if (id === v_item.id) {
+          // 去除列表结束的数据
+          if (status === 8) {
+            timeObjData.value[key].splice(v_index, 1);
+          }
+
           if (v_item.homeScores[0] !== homeScores[0]) {
             v_item.home_bgActive = true;
           }
@@ -595,56 +617,68 @@ const test = () => {
     });
   }
 
-  return;
+  if (data.sportsType === 2) {
+    //篮球
+    let id = data.score[0];
+    let status = data.score[1];
+    let kaiqiuTime = data.score[2]; //小节剩余时间(秒) - int"
+    let homeScores = data.score[3];
+    let awayScores = data.score[4];
 
-  //篮球
-  let id = data.score[0];
-  let status = data.score[1];
-  let kaiqiuTime = data.score[2]; //小节剩余时间(秒) - int"
-  let homeScores = data.score[3];
-  let awayScores = data.score[4];
+    Object.entries(timeObjData.value).forEach(([key, value]) => {
+      value.map((v_item, v_index) => {
+        if (id === v_item.id) {
+          // 去除列表结束的数据
+          if (status === 10) {
+            timeObjData.value[key].splice(v_index, 1);
+            return;
+          }
 
-  Object.entries(timeObjData.value).forEach(([key, value]) => {
-    value.map((v_item, v_index) => {
-      if (id === v_item.id) {
-        const o_sumAway = v_item.awayScores.reduce((acc, val) => acc + val, 0);
-        const o_sumHome = v_item.homeScores.reduce((acc, val) => acc + val, 0);
+          const o_sumAway = v_item.awayScores.reduce(
+            (acc, val) => acc + val,
+            0
+          );
+          const o_sumHome = v_item.homeScores.reduce(
+            (acc, val) => acc + val,
+            0
+          );
 
-        const sumAway = awayScores.reduce((acc, val) => acc + val, 0);
-        const sumHome = homeScores.reduce((acc, val) => acc + val, 0);
+          const sumAway = awayScores.reduce((acc, val) => acc + val, 0);
+          const sumHome = homeScores.reduce((acc, val) => acc + val, 0);
 
-        console.log("sumHome", sumHome);
-        console.log("o_sumHome", o_sumHome);
-        console.log("o_sumHome11", sumHome == o_sumHome);
+          console.log("sumHome", sumHome);
+          console.log("o_sumHome", o_sumHome);
+          console.log("o_sumHome11", sumHome == o_sumHome);
 
-        if (sumHome != o_sumHome) {
-          v_item.home_bgActive = true;
-          console.log("进拉了");
+          if (sumHome != o_sumHome) {
+            v_item.home_bgActive = true;
+            console.log("进拉了");
+          }
+
+          console.log("sumAway", sumAway);
+          console.log("o_sumAway", o_sumAway);
+
+          if (sumAway != o_sumAway) {
+            v_item.away_bgActive = true;
+            console.log("进拉了2");
+          }
+
+          v_item.homeScores = homeScores;
+          v_item.awayScores = awayScores;
+
+          v_item.statusID = status;
+
+          v_item.liveTime = kaiqiuTime;
+          v_item.basketball_time = secondsToMinutesAndSeconds(v_item.liveTime);
+
+          v_item.away_basketball_score = sumAway;
+          v_item.home_basketball_score = sumHome;
+
+          disStyleClose(id);
         }
-
-        console.log("sumAway", sumAway);
-        console.log("o_sumAway", o_sumAway);
-
-        if (sumAway != o_sumAway) {
-          v_item.away_bgActive = true;
-          console.log("进拉了2");
-        }
-
-        v_item.homeScores = homeScores;
-        v_item.awayScores = awayScores;
-
-        v_item.statusID = status;
-
-        v_item.liveTime = kaiqiuTime;
-        v_item.basketball_time = secondsToMinutesAndSeconds(v_item.liveTime);
-
-        v_item.away_basketball_score = sumAway;
-        v_item.home_basketball_score = sumHome;
-
-        disStyleClose(id);
-      }
+      });
     });
-  });
+  }
 };
 
 // 清理颜色

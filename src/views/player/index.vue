@@ -211,8 +211,10 @@ let userInfo = ref(proxy.$cache.local.getJSON("user") || {});
 const lineNum = ref(0); //在线人数
 
 const isShow = ref(true);
+
+const currentDomain = window.location.hostname; //当前域名
 const iframeUrl = ref(
-  `https://8hzb.chat/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
+  `https://${currentDomain}/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
 );
 const VideoPlayerRef = ref();
 const player = ref(null);

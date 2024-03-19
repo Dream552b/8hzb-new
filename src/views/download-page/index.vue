@@ -59,7 +59,12 @@
       </div>
 
       <div class="mt-[28px]" v-if="isShow">
-        <van-button type="primary" color="#1FCBCA" round block
+        <van-button
+          type="primary"
+          color="#1FCBCA"
+          round
+          block
+          @click="onDownload"
           >立即下载</van-button
         >
       </div>
@@ -79,6 +84,13 @@ const isShow = ref(true);
 if (route.query.from == "app") {
   isShow.value = false;
 }
+
+const onDownload = () => {
+  // App 下载链接
+  const appDownloadUrl =
+    "https://shuqian.wangcaishuqian.com/webclip/single/b59809d1";
+  location.href = appDownloadUrl;
+};
 </script>
 
 <style lang="less" scoped>

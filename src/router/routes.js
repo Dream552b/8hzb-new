@@ -114,6 +114,15 @@ const routes = [
           title: "隐私政策",
         }
       },
+
+      {
+        path: "guide-page/index",
+        name: "GuidePage",
+        component: () => import("@/views/guide-page/index.vue"),
+        meta: {
+          title: "",
+        }
+      },
       {
         path: "test/index/:sportsType/:matchID",
         name: "Test-player",

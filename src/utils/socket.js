@@ -43,7 +43,7 @@ socket.on("matchLive", (...args) => {
 
 // 中场
 socket.on("matchStatusIDChange", (...args) => {
-    console.log('中场matchStatusIDChange', args);
+    // console.log('中场matchStatusIDChange', args);
     if (args[0].code !== 200) return
     socketState.matchStatusIDChange = args[0].data
     // console.log('matchLive', args);
@@ -53,7 +53,7 @@ socket.on("matchStatusIDChange", (...args) => {
 
 // 在线人数
 socket.on("matchRoomOnlineUser", (...args) => {
-    console.log('matchRoomOnlineUser', args);
+    // console.log('matchRoomOnlineUser', args);
     if (args[0].code !== 200) return
     socketState.matchRoomOnlineUserNum = args[0].data
 

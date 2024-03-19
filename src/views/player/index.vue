@@ -16,7 +16,8 @@
               (matchInfo.matchStatus === 1 ||
                 (matchInfo.sportsType === 1 && matchInfo.matchStatus === 8) ||
                 (matchInfo.sportsType === 2 && matchInfo.matchStatus === 10)) &&
-              !isBackVideo
+              !isBackVideo &&
+              !matchInfo.matchLiveInfo.playUrl
             "
           />
           <div v-else-if="originData[originDataIndex]">
@@ -264,6 +265,12 @@ const handlanGetMatchInfo = async () => {
 
   videoOriginDis(disData);
 
+  //测试主播
+  // disData.matchLiveInfo.anchorName = "123";
+  // disData.matchLiveInfo.playUrl =
+  //   "https://playsz.juwangyun.cn/live/1710766791521.m3u8?timestamp=1710817220993";
+  // console.log("disData", disData);
+
   matchInfo.value = disData;
 };
 
@@ -315,18 +322,14 @@ const videoOriginDis = disData => {
         name: nameObj[item],
         url: disURL + "?timestamp=" + timestamp
       };
+      //测试
       // if (index === 0) {
       //   obj.name = "8H主播";
-      //   obj.url = "https://8hzb.xyz/8hzb/1710310529583.m3u8";
+      //   obj.url = "https://playsz.juwangyun.cn/live/1710766791521.m3u8?timestamp=1710817220993";
       // }
       originData.value.push(obj);
     }
   });
-
-  // originData.value.push({
-  //   name: "皇家主播",
-  //   url: "https://play.xshuijiu.cn/live/sd-1-4053236.m3u8"
-  // });
 };
 
 // obj处理比分
@@ -354,6 +357,10 @@ const onWsDisScore = data => {
 
     if (id === v_item.matchID) {
       console.log("socketState.matchLive 足球 状态更新", socketState.matchLive);
+      //从未开始到已开始逻辑处理 刷新详情接口
+      // if(v_item.statusID === 1 && status !== 1){
+      // }
+
       if (v_item.homeScores[0] !== homeScores[0]) {
         v_item.home_bgActive = true;
       }
@@ -364,7 +371,7 @@ const onWsDisScore = data => {
       v_item.homeScores = homeScores;
       v_item.awayScores = awayScores;
 
-      v_item.statusID = status;
+      v_item.matchStatus = status;
 
       v_item.liveTime = liveTime;
       // disStyleClose(id);
@@ -398,7 +405,7 @@ const onWsDisScore = data => {
       v_item.homeScores = homeScores;
       v_item.awayScores = awayScores;
 
-      v_item.statusID = status;
+      v_item.matchStatus = status;
 
       v_item.liveTime = kaiqiuTime;
       v_item.basketball_time = secondsToMinutesAndSeconds(v_item.liveTime);

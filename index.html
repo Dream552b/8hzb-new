@@ -53,6 +53,13 @@
     <script type="module" src="/src/main.js"></script>
     <% if (ENABLE_ERUDA === "true") { %>
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+
+    <!-- 51统计 -->
+    <script src="/sdk/js-sdk-event.min.js" defer></script>
+    <script src="/sdk/js-sdk-pro.min.js" defer></script>
+    <script src="/sdk/statistics.js" defer></script>
+
+
     <script>
       eruda.init();
     </script>

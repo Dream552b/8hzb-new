@@ -118,7 +118,9 @@ const onDownloadIphone = () => {
   // location.href = appDownloadUrl;
 
   // 在新窗口中打开下载页面
-  window.open(appDownloadUrl, "_blank");
+  setTimeout(() => {
+    window.open(appDownloadUrl, "_blank");
+  }, 100);
 };
 
 // 检测用户设备是 iOS 还是 Android

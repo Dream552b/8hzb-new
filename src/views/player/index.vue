@@ -213,10 +213,25 @@ const lineNum = ref(0); //在线人数
 
 const isShow = ref(true);
 
-const currentDomain = window.location.hostname; //当前域名
+// const currentDomain2 = window.location.hostname || "https://8hzb.com"; //当前域名
+const currentDomain =
+  process.env.NODE_ENV === "production" ? window.location.hostname : "8hzb.com";
+
 const iframeUrl = ref(
   `https://${currentDomain}/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
 );
+
+// 本地
+// const currentDomain =
+// process.env.NODE_ENV === "production"
+//   ? window.location.hostname
+//   : "192.168.3.248:5174"; //本地
+
+// 本地 http
+// const iframeUrl = ref(
+//   `http://${currentDomain}/chatRoom/chat/${route.params.sportsType}/${route.params.matchID}`
+// );
+
 const VideoPlayerRef = ref();
 const player = ref(null);
 const myPlayer = ref(null);

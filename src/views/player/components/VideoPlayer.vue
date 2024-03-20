@@ -1,6 +1,6 @@
 <template>
-  <div class="w-full h-[212px] bg-[#000] relative truncate">
-    <!-- disablePictureInPicture 取消画中画 h-[234px] -->
+  <div class="w-full h-[212px] relative truncate">
+    <!-- disablePictureInPicture 取消画中画 h-[234px]  bg-[#000]  -->
     <video-player
       class="w-full h-full"
       :class="[
@@ -44,6 +44,11 @@
       :videoStatusNum="videoStatusNum"
     />
 
+    <!-- 兼容安卓黑色背景 -->
+    <div
+      class="w-full h-[212px] bg-[#000] absolute left-0 top-0 z-100"
+      v-if="isAppShow && !isAppOnePlay"
+    ></div>
     <!-- 自定义状态栏 -->
     <div class="w-full h-[212px] absolute top-0 truncate" v-if="!isBackVideo">
       <div
@@ -105,7 +110,13 @@
 </template>
 
 <script setup>
-import { defineComponent, defineProps, ref, watch } from "vue";
+import {
+  defineComponent,
+  defineProps,
+  ref,
+  watch,
+  getCurrentInstance
+} from "vue";
 import videoStatus from "./video-status.vue";
 import { VideoPlayer } from "@videojs-player/vue";
 import PlayerCustomControls from "./advanced.vue";
@@ -115,6 +126,8 @@ import "video.js/dist/video-js.css";
 import video_zhCN from "./zh-CN.json";
 import "videojs-flvjs-es6";
 videojs.addLanguage("zh-CN", video_zhCN);
+
+const { proxy } = getCurrentInstance();
 
 const props = defineProps({
   videoOrigin: {
@@ -146,6 +159,10 @@ const config = ref({
   muted: false,
   loop: false
 });
+
+const isAppShow = ref(proxy.$cache.session.get("from") || "");
+
+const isAppOnePlay = ref(false); //第一次播放
 
 // 视频状态
 const videoStateObj = ref(null);
@@ -267,6 +284,7 @@ const handleCanplay = log => {
   vanloading.value = false;
   // console.log("可以播放，但中途可能因为加载而暂停; 直播画面出现了");
   isShowVideoStatus.value = false;
+  isAppOnePlay.value = true;
 };
 
 const handleLoadstart = log => {

@@ -58,13 +58,25 @@
         </div>
       </div>
 
-      <div class="mt-[28px]" v-if="isShow">
+      <div class="mt-[28px]" v-if="!isShow">
         <van-button
           type="primary"
           color="#1FCBCA"
           round
           block
           @click="onDownload"
+          v-if="!isIphone"
+          >立即下载</van-button
+        >
+
+        <!-- 苹果端 -->
+        <van-button
+          type="primary"
+          color="#1FCBCA"
+          round
+          block
+          @click="onDownloadIphone"
+          v-else
           >立即下载</van-button
         >
       </div>
@@ -81,18 +93,50 @@ const route = useRoute();
 
 const { proxy } = getCurrentInstance();
 
-const isShow = ref(proxy.$cache.local.get("from") || "");
+const isShow = ref(proxy.$cache.session.get("from") || "");
+
+console.log("isShow", isShow.value);
 
 // if (route.query.from == "app") {
 //   isShow.value = false;
 // }
 
+const isIphone = ref(false); // 是否苹果端
+
 const onDownload = () => {
   // App 下载链接
   const appDownloadUrl =
-    "https://shuqian.wangcaishuqian.com/webclip/single/b59809d1";
+    "https://shuqian.wangcaishuqian.com/webclip/single/b03e098c";
   location.href = appDownloadUrl;
 };
+
+const onDownloadIphone = () => {
+  // App 下载链接  苹果
+  const appDownloadUrl =
+    "https://shuqian.wangcaishuqian.com/webclip/single/aba50944";
+  location.href = appDownloadUrl;
+};
+
+// 检测用户设备是 iOS 还是 Android
+function detectDevice() {
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  if (/iphone|ipad|ipod/.test(userAgent)) {
+    isIphone.value = true;
+    console.log("****");
+
+    return "iOS";
+  } else if (/android/.test(userAgent)) {
+    isIphone.value = false;
+    console.log("123123");
+
+    return "Android";
+  } else {
+    return "Unknown";
+  }
+}
+
+// 调用 detectDevice 函数进行设备检测
+detectDevice();
 </script>
 
 <style lang="less" scoped>

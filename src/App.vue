@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, getCurrentInstance } from "vue";
+import { onMounted, getCurrentInstance, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -19,9 +19,12 @@ function isQQBrowser() {
 }
 
 onMounted(() => {
-  if (route.query.from) {
-    proxy.$cache.local.set("from", route.query.from);
-  }
+  setTimeout(() => {
+    let sign = route.query.from;
+    if (sign === "app") {
+      proxy.$cache.session.set("from", sign);
+    }
+  }, 500);
 
   if (detectWechatBrowser() || isQQBrowser()) {
     router.replace("/guide-page/index");

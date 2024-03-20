@@ -97,24 +97,28 @@ const isShow = ref(proxy.$cache.session.get("from") || "");
 
 console.log("isShow", isShow.value);
 
-// if (route.query.from == "app") {
-//   isShow.value = false;
-// }
-
 const isIphone = ref(false); // 是否苹果端
 
 const onDownload = () => {
-  // App 下载链接
+  // App 下载链接 安卓
   const appDownloadUrl =
-    "https://shuqian.wangcaishuqian.com/webclip/single/b03e098c";
-  location.href = appDownloadUrl;
+    "https://image-1320074598.cos.accelerate.myqcloud.com/2024-03/88f1dda4e4fd30de40ee1f8e47f8b680.apk";
+
+  // location.href = appDownloadUrl;
+
+  // 在新窗口中打开下载页面
+  window.open(appDownloadUrl, "_blank");
 };
 
 const onDownloadIphone = () => {
   // App 下载链接  苹果
   const appDownloadUrl =
     "https://shuqian.wangcaishuqian.com/webclip/single/aba50944";
-  location.href = appDownloadUrl;
+
+  // location.href = appDownloadUrl;
+
+  // 在新窗口中打开下载页面
+  window.open(appDownloadUrl, "_blank");
 };
 
 // 检测用户设备是 iOS 还是 Android

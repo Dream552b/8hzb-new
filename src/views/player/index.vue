@@ -35,6 +35,7 @@
             class="absolute top-0 left-0 z-[100]"
             :matchID="queryParams.matchID"
             :advInfo="advInfo"
+            :matchInfo="matchInfo"
             @handlanGetMatchInfo="handlanGetMatchInfo"
           />
           <!-- 在线人数 管理员才显示-->
@@ -213,7 +214,6 @@ const lineNum = ref(0); //在线人数
 
 const isShow = ref(true);
 
-// const currentDomain2 = window.location.hostname || "https://8hzb.com"; //当前域名
 const currentDomain =
   process.env.NODE_ENV === "production" ? window.location.hostname : "8hzb.com";
 

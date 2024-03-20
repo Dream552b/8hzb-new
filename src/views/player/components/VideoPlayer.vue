@@ -49,6 +49,7 @@
       class="w-full h-[212px] bg-[#000] absolute left-0 top-0 z-100"
       v-if="isAppShow && !isAppOnePlay"
     ></div>
+
     <!-- 自定义状态栏 -->
     <div class="w-full h-[212px] absolute top-0 truncate" v-if="!isBackVideo">
       <div

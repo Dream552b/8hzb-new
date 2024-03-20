@@ -95,8 +95,6 @@ const { proxy } = getCurrentInstance();
 
 const isShow = ref(proxy.$cache.session.get("from") || "");
 
-console.log("isShow", isShow.value);
-
 const isIphone = ref(false); // 是否苹果端
 
 const onDownload = () => {

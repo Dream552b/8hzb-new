@@ -9,6 +9,10 @@ const props = defineProps({
     type: Object,
     defalut: {}
   },
+  matchInfo: {
+    type: Object,
+    defalut: {}
+  },
   matchID: {
     type: Number,
     defalut: 0
@@ -59,7 +63,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col absolut z-10 top-0 left-0">
+  <div class="w-full h-[212px] flex flex-col absolut z-10 top-0 left-0">
+    <!-- 黑板广告 -->
+    <div
+      v-if="false"
+      class="absolute bottom-[6px] left-[6px] right-[6px] m-auto py-[2px] w-[90%] bg-[#000] text-[#fff] text-[12px]"
+    >
+      趁着比赛没开始,先下载泡泡和投注APP泡泡网址：ya.cn
+      添加账号：meixi368下注网址: v5ty35.vip下载好了，跟主播一起边看球边下注
+      趁着比赛没开始,先下载泡泡和投注应用泡泡网址:ya.cn添加账号:meixi368下注网址:v5ty35.vip下载好了,跟主播一起边看球边下注
+    </div>
+
     <!-- 文字滚动 -->
     <div
       class="w-[100%] self-end flex flex-col wrap-bar"
@@ -78,7 +92,16 @@ onMounted(() => {
     <!-- midfieldDisplay = 1 中场才显示 -->
     <div
       class="mt-[10px] flex absolute left-[10px] top-[26px]"
-      v-if="!advInfo.midfieldDisplay || zhong"
+      v-if="
+        !advInfo.midfieldDisplay ||
+        zhong ||
+        (matchInfo.sportsType === 2 &&
+          matchInfo.matchStatus === 5 &&
+          advInfo.midfieldDisplay) ||
+        (matchInfo.sportsType === 1 &&
+          matchInfo.matchStatus === 3 &&
+          advInfo.midfieldDisplay)
+      "
     >
       <img
         :src="item"

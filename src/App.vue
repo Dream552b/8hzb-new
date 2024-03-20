@@ -1,7 +1,10 @@
 <script setup>
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted, getCurrentInstance } from "vue";
+import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
+const route = useRoute();
+
+const { proxy } = getCurrentInstance();
 
 // 判断是否为微信浏览器
 function detectWechatBrowser() {
@@ -16,17 +19,16 @@ function isQQBrowser() {
 }
 
 onMounted(() => {
-  console.log(
-    "detectWechatBrowser() || isQQBrowser()",
-    detectWechatBrowser(),
-    isQQBrowser()
-  );
+  if (route.query.from) {
+    proxy.$cache.local.set("from", route.query.from);
+  }
 
   if (detectWechatBrowser() || isQQBrowser()) {
     router.replace("/guide-page/index");
-  } else {
-    router.replace("/");
   }
+  // else {
+  //   router.replace("/");
+  // }
 });
 </script>
 

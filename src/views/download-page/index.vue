@@ -74,16 +74,18 @@
 
 <script setup>
 import TopNavBar from "@/components/TopNavBar/index.vue";
-import { ref } from "vue";
+import { ref, getCurrentInstance } from "vue";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
-const isShow = ref(true);
+const { proxy } = getCurrentInstance();
 
-if (route.query.from == "app") {
-  isShow.value = false;
-}
+const isShow = ref(proxy.$cache.local.get("from") || "");
+
+// if (route.query.from == "app") {
+//   isShow.value = false;
+// }
 
 const onDownload = () => {
   // App 下载链接

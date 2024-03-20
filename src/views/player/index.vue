@@ -356,7 +356,7 @@ const onWsDisScore = data => {
     let v_item = matchInfo.value;
 
     if (id === v_item.matchID) {
-      console.log("socketState.matchLive 足球 状态更新", socketState.matchLive);
+      // console.log("socketState.matchLive 足球 状态更新", socketState.matchLive);
       //从未开始到已开始逻辑处理 刷新详情接口
       // if(v_item.statusID === 1 && status !== 1){
       // }
@@ -389,7 +389,7 @@ const onWsDisScore = data => {
     let v_item = matchInfo.value;
 
     if (id === v_item.matchID) {
-      console.log("socketState.matchLive篮球 状态更新", socketState.matchLive);
+      // console.log("socketState.matchLive篮球 状态更新", socketState.matchLive);
       const o_sumAway = v_item.awayScores.reduce((acc, val) => acc + val, 0);
       const o_sumHome = v_item.homeScores.reduce((acc, val) => acc + val, 0);
       const sumAway = awayScores.reduce((acc, val) => acc + val, 0);

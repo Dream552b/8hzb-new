@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-[216px] relative truncate">
+  <div class="w-full h-[212px] bg-[#000] relative truncate">
     <!-- disablePictureInPicture 取消画中画 h-[234px] -->
     <video-player
       class="w-full h-full"

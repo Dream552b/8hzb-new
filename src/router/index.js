@@ -10,7 +10,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  NProgress.start();
+  // NProgress.start();
   // 路由缓存
   useCachedViewStoreHook().addCachedView(to);
   // 页面 title
@@ -19,7 +19,7 @@ router.beforeEach((to, from, next) => {
 });
 
 router.afterEach(() => {
-  NProgress.done();
+  // NProgress.done();
 });
 
 export default router;

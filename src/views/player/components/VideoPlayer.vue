@@ -1,6 +1,8 @@
 <template>
   <div class="w-full h-[212px] relative truncate">
     <!-- disablePictureInPicture 取消画中画 h-[234px]  bg-[#000]  -->
+
+    <!--  :playbackRates="config.playbackRates" -->
     <video-player
       class="w-full h-full"
       :class="[
@@ -12,7 +14,6 @@
       :poster="mediaConfig.poster"
       :tracks="mediaConfig.tracks"
       :autoplay="config.autoplay"
-      :playbackRates="config.playbackRates"
       :fluid="config.fluid"
       :loop="config.loop"
       language="zh-CN"
@@ -31,10 +32,12 @@
       @readonly="handleReadonly"
       @metaloaded="handleMetaloaded"
       @stopped="handleStopped"
-      @paused="handlePaused"
+      @pause="handlePaused"
       @playing="handlePlaying"
       @canplay="handleCanplay"
       @play="handlePlay"
+      @loadeddata="handleLoadeddata"
+      @progress="handleProgress"
     >
     </video-player>
 
@@ -51,7 +54,10 @@
     ></div>
 
     <!-- 自定义状态栏 -->
-    <div class="w-full h-[212px] absolute top-0 truncate" v-if="!isBackVideo">
+    <div
+      class="w-full h-[212px] absolute top-0 truncate"
+      v-if="!isBackVideo && !isAppShow"
+    >
       <div
         class="gradient-box fade-in-out text-[#fff] w-full absolute z-[100] bottom-0 flex justify-between items-center px-[20px] text-[10px]"
         :class="isShowBox ? 'translated' : ''"
@@ -66,7 +72,7 @@
         <div class="flex items-center">
           <span>{{ props.videoOrigin.name || "" }}</span>
           <svg-icon
-            class="text-[#fff] text-[16px] ml-[10px]"
+            class="text-[#fff] text-[20px] ml-[10px]"
             name="full-icon"
             @click="onFullVideo"
           />
@@ -78,7 +84,7 @@
     <div
       class="w-full h-[234px] absolute left-0 top-0"
       @click="onClikeVideo"
-      v-if="!isBackVideo"
+      v-if="!isBackVideo && !isAppShow"
     >
       <div v-if="videoStateObj">
         <div
@@ -142,6 +148,8 @@ const props = defineProps({
   }
 });
 
+const isAppShow = ref(proxy.$cache.session.get("from") || "");
+
 const mediaConfig = ref({
   sources: props.videoOrigin.url,
   poster: "",
@@ -155,13 +163,11 @@ const config = ref({
   volume: 0.8,
   playbackRate: 1,
   playbackRates: playbackRatesOptions[0],
-  controls: props.isBackVideo ? true : false,
+  controls: props.isBackVideo || isAppShow.value ? true : false, //操作控件是否显示
   fluid: true, // 铺满
   muted: false,
   loop: false
 });
-
-const isAppShow = ref(proxy.$cache.session.get("from") || "");
 
 const isAppOnePlay = ref(false); //第一次播放
 
@@ -196,20 +202,12 @@ const onIsPlay = () => {
   // 生成随机参数
   var timestamp = Date.now();
 
-  console.log("timestamp", timestamp);
-  console.log("saveTimeStamp.value", saveTimeStamp.value);
-
   if (!videoStateObj.value.playing) {
-    console.log(
-      "timestamp - saveTimeStamp.value",
-      timestamp - saveTimeStamp.value
-    );
-
     // 计算时间戳之间的毫秒数差
     var timeDiff = Math.abs(timestamp - saveTimeStamp.value);
     // 将毫秒数转换为秒数
     var secondsDiff = Math.floor(timeDiff / 1000);
-    console.log("secondsDiff", secondsDiff);
+    // console.log("secondsDiff", secondsDiff);
 
     // 小于10秒不重新拉流
     if (saveTimeStamp.value && secondsDiff > 8) {
@@ -250,7 +248,7 @@ const handleError = log => {
   isShowVideoStatus.value = true;
   vanloading.value = false;
 
-  console.log("handleError", log);
+  // console.log("handleError", log);
 };
 const handleReadonly = log => {
   // console.log("handleReadonly", log);
@@ -264,7 +262,7 @@ const handleStopped = log => {
   // console.log("handleStopped", log);
 };
 const handlePaused = log => {
-  // console.log("handlePaused", log);
+  // console.log("handlePaused 视频暂停了", log);
 };
 
 //开始播放
@@ -295,10 +293,21 @@ const handleLoadstart = log => {
   vanloading.value = true;
 };
 
+const handleProgress = log => {
+  // console.log("handleProgress 在浏览器正在下载视频数据时周期性地触发。", log);
+};
+
+const handleLoadeddata = log => {
+  // console.log(
+  //   "handleLoadeddata 在浏览器已经取回足够的数据（至少播放当前帧），可以播放时触发。",
+  //   log
+  // );
+};
+
 watch(
   () => props.videoOrigin.url,
   val => {
-    console.log("val-----", val);
+    // console.log("val-----", val);
 
     mediaConfig.value.sources = val;
     vanloading.value = true;

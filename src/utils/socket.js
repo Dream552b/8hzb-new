@@ -6,7 +6,8 @@ export const socketState = reactive({
     matchOdds: [],
     matchLive: [],
     matchStatusIDChange: {},
-    matchRoomOnlineUserNum: 0
+    matchRoomOnlineUserNum: 0,
+    matchLiveStatusChange: {}
 });
 
 // "undefined" means the URL will be computed from the `window.location` object
@@ -58,6 +59,15 @@ socket.on("matchRoomOnlineUser", (...args) => {
     socketState.matchRoomOnlineUserNum = args[0].data
 
 });
+
+// 详情比赛房间推送-主播流状态推送
+socket.on("matchLiveStatusChange", (...args) => {
+    // console.log('matchRoomOnlineUser', args);
+    if (args[0].code !== 200) return
+    socketState.matchLiveStatusChange = args[0].data
+
+});
+
 
 
 

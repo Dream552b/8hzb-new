@@ -320,11 +320,7 @@ const videoOriginDis = disData => {
   // 主播源处理
   if (disData.matchLiveInfo.playUrl) {
     // flv 换成 m3u8； 只是.后面的格式不同
-    let disURL =
-      disData.matchLiveInfo.playUrl.substring(
-        0,
-        disData.matchLiveInfo.playUrl.length - 4
-      ) + ".m3u8";
+    let disURL = disData.matchLiveInfo.playUrl.replace(".flv", ".m3u8");
 
     let obj = {
       name: disData.matchLiveInfo.anchorName,
@@ -343,8 +339,7 @@ const videoOriginDis = disData => {
   arr.forEach((item, index) => {
     if (disData[item]) {
       // flv 换成 m3u8； 只是.后面的格式不同
-      let disURL =
-        disData[item].substring(0, disData[item].length - 4) + ".m3u8";
+      let disURL = disData[item].replace(".flv", ".m3u8");
       let obj = {
         name: nameObj[item],
         url: disURL + "?timestamp=" + timestamp
@@ -470,6 +465,38 @@ onMounted(() => {
       lineNum.value = val;
     },
     { immediate: true }
+  );
+
+  // 主播流状态推送
+  watch(
+    () => socketState.matchLiveStatusChange,
+    obj => {
+      // let tsojb = {
+      //   anchorName: "8H主播",
+      //   playUrl:
+      //     "https://play.8hzb.science/live/1711015144287.flv?timestamp=1711019289725",
+      //   liveStatus: 3
+      // };
+
+      let tsojb = obj;
+      if (tsojb.liveStatus === 2) {
+        // 直播中
+        // 主播源处理
+        if (tsojb.playUrl) {
+          // flv 换成 m3u8； 只是.后面的格式不同
+          let disURL = tsojb.playUrl.replace(".flv", ".m3u8");
+          let obj = {
+            name: tsojb.anchorName,
+            url: disURL
+          };
+          originData.value.unshift(obj);
+          // onChangeOrigin(0);
+        }
+      } else {
+        // 结束
+        originData.value.shift();
+      }
+    }
   );
 });
 onUnmounted(() => {

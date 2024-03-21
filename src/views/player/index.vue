@@ -38,6 +38,18 @@
             :matchInfo="matchInfo"
             @handlanGetMatchInfo="handlanGetMatchInfo"
           />
+
+          <!-- 黑板广告 -->
+          <div
+            v-if="false"
+            class="absolute bottom-[6px] left-[6px] right-[6px] m-auto py-[2px] w-[90%] bg-[#000] text-[#fff] text-[12px]"
+          >
+            趁着比赛没开始,先下载泡泡和投注APP泡泡网址：ya.cn
+            添加账号：meixi368下注网址:
+            v5ty35.vip下载好了，跟主播一起边看球边下注
+            趁着比赛没开始,先下载泡泡和投注应用泡泡网址:ya.cn添加账号:meixi368下注网址:v5ty35.vip下载好了,跟主播一起边看球边下注
+          </div>
+
           <!-- 在线人数 管理员才显示-->
           <online v-if="userInfo.roleID === 16" :lineNum="lineNum" />
         </div>

@@ -104,7 +104,7 @@ onMounted(() => {
     <!-- 二维码 -->
     <div
       v-if="advInfo.qrcodeImageArr"
-      class="absolute top-[152px]"
+      class="absolute top-[146px]"
       :class="advInfo.position === 1 ? 'left-[6px]' : 'right-[10px]'"
     >
       <img

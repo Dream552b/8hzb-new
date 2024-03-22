@@ -1,6 +1,15 @@
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from "vue";
+import { ref, watch, onMounted, onUnmounted, getCurrentInstance } from "vue";
+import {
+  FOOTBALL_TYPE,
+  BASKETBALL_TYPE,
+  FOOTBALL_STYLE_STATUS_ARR,
+  BASKETBALLSTYLE_STATUS_ARR,
+  F_LIVE_STATUS,
+  B_LIVE_STATUS
+} from "@/modules/enum";
 
+const { proxy } = getCurrentInstance();
 const props = defineProps({
   matchInfo: {
     type: Object,
@@ -14,6 +23,7 @@ const props = defineProps({
 
 const emits = defineEmits(["onPlayback"]);
 
+const tabsIndex = ref(proxy.$cache.session.getJSON("tabsIndex"));
 let timeok = ref("");
 const timer = ref(null);
 
@@ -81,7 +91,16 @@ onUnmounted(() => {
 
       <div
         class="text-[10px] text-[#fff] flex flex-col justify-center items-center mx-[47px]"
-        v-if="!videoOriginLength && !matchInfo.playbackUrl"
+        v-if="
+          !videoOriginLength &&
+          !matchInfo.playbackUrl &&
+          ((matchInfo.sportsType == 2 &&
+            BASKETBALLSTYLE_STATUS_ARR.find(
+              s => s === matchInfo.matchStatus
+            )) ||
+            (matchInfo.sportsType == 1 &&
+              FOOTBALL_STYLE_STATUS_ARR.find(s => s === matchInfo.matchStatus)))
+        "
       >
         暂无视频源...
       </div>

@@ -9,15 +9,18 @@
       <!-- bg-[#002200]  h-[234px] bg-[#000] -->
       <div class="video-wrap relative h-[212px]">
         <div class="h-full bg-[#000]" v-if="matchInfo.sportsType">
+          <!-- 没开始直播 -->
           <notStarted
             :matchInfo="matchInfo"
+            :videoOriginLength="originData.length"
             @onPlayback="onPlayback"
             v-if="
-              (matchInfo.matchStatus === 1 ||
+              ((matchInfo.matchStatus === 1 ||
                 (matchInfo.sportsType === 1 && matchInfo.matchStatus === 8) ||
                 (matchInfo.sportsType === 2 && matchInfo.matchStatus === 10)) &&
-              !isBackVideo &&
-              !matchInfo.matchLiveInfo.playUrl
+                !isBackVideo &&
+                !matchInfo.matchLiveInfo.playUrl) ||
+              !originData.length
             "
           />
           <div v-else-if="originData[originDataIndex]">
@@ -289,7 +292,8 @@ const handlanGetMatchInfo = async () => {
   const { data, code } = await getMatchInfo(params);
   if (code !== 200) return;
   let disData = onObjDisScore(data);
-
+  // 先清理
+  // originData.value = [];
   videoOriginDis(disData);
 
   //测试主播
@@ -299,6 +303,8 @@ const handlanGetMatchInfo = async () => {
   // console.log("disData", disData);
 
   matchInfo.value = disData;
+
+  console.log("disData111", disData);
 };
 
 const onPlayback = item => {
@@ -347,7 +353,8 @@ const videoOriginDis = disData => {
       //测试
       // if (index === 0) {
       //   obj.name = "8H主播";
-      //   obj.url = "https://playsz.juwangyun.cn/live/1710766791521.m3u8?timestamp=1710817220993";
+      //   // obj.url = "https://play.xshuijiu.cn/live/sd-2-3740249.m3u8";
+      //   obj.url = "https://playcn.xshuijiu.cn/live/1711025367698.m3u8";
       // }
       originData.value.push(obj);
     }
@@ -471,14 +478,20 @@ onMounted(() => {
   watch(
     () => socketState.matchLiveStatusChange,
     obj => {
+      // setTimeout(() => {
+      // 测试
       // let tsojb = {
       //   anchorName: "8H主播",
       //   playUrl:
-      //     "https://play.8hzb.science/live/1711015144287.flv?timestamp=1711019289725",
-      //   liveStatus: 3
+      //     "https://playcn.xshuijiu.cn/live/1711095665296.m3u8?timestamp=1711095795324",
+      //   liveStatus: 2
       // };
 
+      // 生成随机参数
+      var timestamp = Date.now();
       let tsojb = obj;
+      // console.log("主播流状态推送", tsojb);
+
       if (tsojb.liveStatus === 2) {
         // 直播中
         // 主播源处理
@@ -487,16 +500,35 @@ onMounted(() => {
           let disURL = tsojb.playUrl.replace(".flv", ".m3u8");
           let obj = {
             name: tsojb.anchorName,
-            url: disURL
+            url: disURL + "?timestamp=" + timestamp
           };
+
+          // 更新详情的对象.
+          console.log(
+            "matchInfo.value.matchLiveInfo",
+            matchInfo.value.matchLiveInfo
+          );
+
+          matchInfo.value.matchLiveInfo.playUrl = tsojb.playUrl;
+          matchInfo.value.matchLiveInfo.anchorName = tsojb.anchorName;
+          matchInfo.value.matchStatus = tsojb.anchorName;
+
+          // 更新详情的对象.
+          console.log(
+            "matchInfo.value.matchLiveInfo2",
+            matchInfo.value.matchLiveInfo
+          );
+
+          // 更新数据源
           originData.value.unshift(obj);
-          // onChangeOrigin(0);
         }
       } else {
         // 结束
         originData.value.shift();
       }
+      // }, 1000);
     }
+    // { immediate: true }
   );
 });
 onUnmounted(() => {

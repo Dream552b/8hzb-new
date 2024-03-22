@@ -13,6 +13,18 @@ export function login(data) {
     });
 }
 
+// 注册
+export function register(data) {
+    return http.request({
+        url: "/v2/user/register",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+    });
+}
+
 // 用户详情
 export function getUserInfo(params) {
     return http.request({

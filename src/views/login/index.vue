@@ -12,21 +12,56 @@
     </div>
 
     <div class="px-[18px] mt-[30px]">
-      <van-form @submit="onLogin">
+      <van-form @submit="onClickSelect(status)">
         <van-field
+          v-if="status"
           v-model="username"
-          placeholder="请输入用户号 "
+          placeholder="请输入账号"
+          type="number"
           class="myField rounded-[20px]"
-          :rules="[{ required: true, message: '请输入用户名' }]"
+          :rules="[{ required: true, message: '请输入账号' }]"
         />
+
+        <van-field
+          v-else
+          v-model="phone"
+          placeholder="请输入手机号"
+          type="number"
+          class="myField rounded-[20px]"
+          name="pattern"
+          :rules="[{ pattern, message: '请输入11位手机号' }]"
+        />
+
         <van-field
           v-model="password"
           placeholder="请输入密码"
+          type="password"
           class="myField rounded-[20px] mt-[24px]"
           :rules="[{ required: true, message: '请输入密码' }]"
         />
+        <van-field
+          v-if="!status"
+          v-model="confirmPassword"
+          placeholder="请再次确认密码"
+          type="password"
+          class="myField rounded-[20px] mt-[24px]"
+          :rules="[{ required: true, message: '请再次确认密码' }]"
+        />
 
         <van-button
+          v-if="status"
+          round
+          :loading="loading"
+          loading-text="注册中..."
+          type="success"
+          class="w-full btn"
+          color="linear-gradient(to right, #3CCAC8, #3CCAC8)"
+          native-type="onLogin"
+          >立即登录</van-button
+        >
+
+        <van-button
+          v-else
           round
           :loading="loading"
           loading-text="登录中..."
@@ -34,11 +69,32 @@
           class="w-full btn"
           color="linear-gradient(to right, #3CCAC8, #3CCAC8)"
           native-type="onLogin"
-          >立即登录</van-button
+          >立即注册</van-button
         >
       </van-form>
 
-      <div class="flex justify-center items-center text-[10px] mt-[20px]">
+      <div
+        v-if="status"
+        class="flex justify-center items-center text-[10px] mt-[20px]"
+        @click="onChange(false)"
+      >
+        没有账号，
+        <span class="text-[#0BB1AF] mx-[4px]">立即注册</span>
+      </div>
+
+      <div
+        v-else
+        class="flex justify-center items-center text-[10px] mt-[20px]"
+        @click="onChange(true)"
+      >
+        已有账号，
+        <span class="text-[#0BB1AF] mx-[4px]">去登录</span>
+      </div>
+
+      <div
+        class="flex justify-center items-center text-[10px] mt-[20px]"
+        v-if="status"
+      >
         <div
           class="flex relative items-center"
           @click.stop.prevent="onClickRadio"
@@ -68,7 +124,7 @@
 <script setup>
 import { ref, getCurrentInstance } from "vue";
 import { showToast } from "vant";
-import { login } from "@/api/login/index";
+import { login, register } from "@/api/login/index";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
@@ -82,8 +138,17 @@ if (appElement) {
 const loading = ref(false);
 
 let checked = ref("0");
+
+let phone = ref("");
 let username = ref("");
 let password = ref("");
+let confirmPassword = ref("");
+
+let status = ref(true); //是否登录页
+
+const pattern = /^\d{11}$/; //正则验证
+// 校验函数返回 true 表示校验通过，false 表示不通过
+const validator = val => /1\d{10}/.test(val);
 
 const toAgreement = val => {
   if (val === 1) {
@@ -105,6 +170,13 @@ const onClickLeft = () => {
   history.back();
 };
 
+const onClickSelect = val => {
+  console.log("val", val);
+
+  if (val) return onLogin();
+  onRegister();
+};
+
 const onLogin = async () => {
   if (checked.value !== "1") {
     showToast("请勾选协议");
@@ -114,6 +186,7 @@ const onLogin = async () => {
     username: username.value,
     password: password.value
   };
+
   loading.value = true;
   const { data, code } = await login(params);
   loading.value = false;
@@ -123,6 +196,36 @@ const onLogin = async () => {
   proxy.$cache.local.setJSON("nickname", data.nickname);
   showToast("登录成功");
   router.replace("/my");
+};
+
+const onChange = val => {
+  status.value = val;
+
+  phone.value = "";
+  password.value = "";
+  confirmPassword.value = "";
+};
+
+const onRegister = async () => {
+  console.log("注册");
+
+  let params = {
+    phone: phone.value,
+    password: password.value,
+    confirmPassword: confirmPassword.value
+  };
+  loading.value = true;
+  const { data, code } = await register(params);
+  loading.value = false;
+
+  if (code !== 200) return showToast(data);
+  showToast({
+    type: "success",
+    message: "注册成功"
+  });
+
+  username.value = params.phone;
+  onChange(true);
 };
 </script>
 

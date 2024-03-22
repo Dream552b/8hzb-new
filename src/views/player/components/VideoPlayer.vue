@@ -88,7 +88,7 @@
     >
       <div v-if="videoStateObj">
         <div
-          class="play-btn w-[50px] h-[40px] flex justify-center items-center rounded-[6px] z-10 absolute left-0 top-0 bottom-0 right-0 m-auto"
+          class="play-btn w-[50px] h-[40px] flex justify-center items-center rounded-[6px] z-20 absolute left-0 top-0 bottom-0 right-0 m-auto"
           v-show="isShowBox"
           @click.stop="onIsPlay"
         >
@@ -150,8 +150,11 @@ const props = defineProps({
 
 const isAppShow = ref(proxy.$cache.session.get("from") || "");
 
+console.log("props.videoOrigin.url", props.videoOrigin.url);
+
 const mediaConfig = ref({
   sources: props.videoOrigin.url,
+  // sources: "", //动态绑定
   poster: "",
   tracks: ""
 });
@@ -204,6 +207,7 @@ const onIsPlay = () => {
 
   if (!videoStateObj.value.playing) {
     // 计算时间戳之间的毫秒数差
+
     var timeDiff = Math.abs(timestamp - saveTimeStamp.value);
     // 将毫秒数转换为秒数
     var secondsDiff = Math.floor(timeDiff / 1000);
@@ -307,11 +311,15 @@ const handleLoadeddata = log => {
 watch(
   () => props.videoOrigin.url,
   val => {
-    // console.log("val-----", val);
+    console.log("源变化val-----", val);
+    setTimeout(() => {
+      mediaConfig.value.sources = val;
+      vanloading.value = true;
 
-    mediaConfig.value.sources = val;
-    vanloading.value = true;
-  }
+      console.log("加载忘了========", mediaConfig.value);
+    }, 50);
+  },
+  { immediate: true }
 );
 </script>
 

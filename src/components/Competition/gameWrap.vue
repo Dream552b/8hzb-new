@@ -282,7 +282,11 @@ const onGetMatchList = async () => {
   }
 
   // 时间升序
-  data.records.sort((a, b) => a.matchTime - b.matchTime);
+  if (params.type == -1 || params.type == -2) {
+    data.records.sort((a, b) => b.matchTime - a.matchTime);
+  } else {
+    data.records.sort((a, b) => a.matchTime - b.matchTime);
+  }
 
   data.records = onDisScore(data.records);
 

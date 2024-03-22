@@ -5,6 +5,10 @@ const props = defineProps({
   matchInfo: {
     type: Object,
     default: {}
+  },
+  videoOriginLength: {
+    type: Number,
+    default: 0
   }
 });
 
@@ -59,7 +63,7 @@ onUnmounted(() => {
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 1"
       >
-        <div class="w-[44px] h-[44px] bg-[#fff] rounded-[50%] mb-[7px]">
+        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
           <img class="w-full h-full" :src="matchInfo.homeTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.homeTeamName }}</div>
@@ -69,13 +73,20 @@ onUnmounted(() => {
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 2"
       >
-        <div class="w-[44px] h-[44px] bg-[#fff] rounded-[50%] mb-[7px]">
+        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
           <img class="w-full h-full" :src="matchInfo.awayTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.awayTeamName }}</div>
       </div>
 
       <div
+        class="text-[10px] text-[#fff] flex flex-col justify-center items-center mx-[47px]"
+        v-if="!videoOriginLength"
+      >
+        暂无视频源...
+      </div>
+      <div
+        v-else
         class="text-[10px] text-[#fff] flex flex-col justify-center items-center mx-[47px]"
       >
         <div>{{ matchInfo.matchStatus === 1 ? "开赛倒计时" : "已结束" }}</div>
@@ -119,11 +130,12 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+
       <div
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 2"
       >
-        <div class="w-[44px] h-[44px] bg-[#fff] rounded-[50%] mb-[7px]">
+        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
           <img class="w-full h-full" :src="matchInfo.homeTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.homeTeamName }}</div>
@@ -133,7 +145,7 @@ onUnmounted(() => {
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 1"
       >
-        <div class="w-[44px] h-[44px] bg-[#fff] rounded-[50%] mb-[7px]">
+        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
           <img class="w-full h-full" :src="matchInfo.awayTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.awayTeamName }}</div>

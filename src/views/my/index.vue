@@ -39,9 +39,9 @@ const onOutLogin = () => {
 
 <template>
   <div class="text-[14px] h-full text-[#000]">
-    <div>
+    <div class="flex items-center justify-between px-[18px]">
       <div
-        class="flex items-center bg-[#fff] mb-[5px] py-[12px] px-[18px]"
+        class="flex items-center bg-[#fff] mb-[5px] py-[12px]"
         @click="userInfo.nickname ? '' : onLogin()"
       >
         <img
@@ -49,10 +49,18 @@ const onOutLogin = () => {
           :src="userInfo.headerImg ? userInfo.headerImg : deTou"
           alt=""
         />
-        <span class="custom-title font-bold text-[16px]">{{
+        <span class="custom-title font-bold text-[16px] text-my">{{
           userInfo.nickname ? userInfo.nickname : "点击登录"
         }}</span>
       </div>
+
+      <img
+        class="w-[18px] h-[18px] mr-[10px]"
+        src="@/assets/icon-out.png "
+        alt=""
+        @click="onOutLogin"
+        v-if="getToken"
+      />
     </div>
     <van-cell-group>
       <van-cell>
@@ -85,7 +93,7 @@ const onOutLogin = () => {
       </van-cell>
     </van-cell-group>
 
-    <div class="px-[24px] absolute bottom-[100px] w-full" v-if="getToken">
+    <!-- <div class="px-[24px] absolute bottom-[100px] w-full" v-if="getToken">
       <van-button
         round
         type="success"
@@ -94,8 +102,13 @@ const onOutLogin = () => {
         @click="onOutLogin"
         >退出登录</van-button
       >
-    </div>
+    </div> -->
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.text-my {
+  vertical-align: middle;
+  line-height: inherit;
+}
+</style>

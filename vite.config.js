@@ -57,15 +57,21 @@ export default defineConfig(({ mode }) => {
       // 仅在 proxy 中配置的代理前缀， mock-dev-server 才会拦截并 mock
       // doc: https://github.com/pengzhanbo/vite-plugin-mock-dev-server
       proxy: {
-        "^/dev-api": {
+        "^/api": {
           // target: "http://192.168.3.32:9000", 
-          target: "https://hg.8hzb.com",
+          // target: "https://hg.8hzb.com",
+          target: "https://test.8hzb.chat",
+          // target: "https://8hzb.chat",
+
           changeOrigin: true,
-          rewrite: path => path.replace(/^\/dev-api/, "/api")
+          // rewrite: path => path.replace(/^\/api/, "/api")
         },
+
         '/socketIo/': {
-          target: 'http://192.168.3.32:9000',
+          // target: 'http://192.168.3.32:9000',
           // target: 'https://hg.8hzb.com',
+          target: "https://test.8hzb.chat",
+          // target: "https://8hzb.chat",
           changeOrigin: true,
           secure: false,
           ws: true

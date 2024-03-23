@@ -38,7 +38,7 @@ const onOutLogin = () => {
 </script>
 
 <template>
-  <div class="text-[14px] h-full text-[#000]">
+  <div class="text-[14px] h-full text-[#000] bg-[#fff]">
     <div class="flex items-center justify-between px-[18px]">
       <div
         class="flex items-center bg-[#fff] mb-[5px] py-[12px]"

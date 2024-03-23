@@ -105,6 +105,7 @@ onUnmounted(() => {
         暂无视频源...
       </div>
       <div
+        v-else
         class="text-[10px] text-[#fff] flex flex-col justify-center items-center mx-[47px]"
       >
         <div>{{ matchInfo.matchStatus === 1 ? "开赛倒计时" : "已结束" }}</div>

@@ -198,7 +198,7 @@
       <!-- bottom part -->
       <div class="flex items-center justify-center relative leading-[16px]">
         <div
-          class="flex items-center justify-end min-w-[100px]"
+          class="flex items-center justify-end min-w-[80px]"
           :class="{ blink: gameItem.asia_zhiActive }"
         >
           <span>
@@ -224,7 +224,7 @@
           </div>
         </div>
         <div
-          class="flex items-center min-w-[100px]"
+          class="flex items-center min-w-[80px]"
           :class="{ blink: gameItem.bs_zhiActive }"
         >
           <span>

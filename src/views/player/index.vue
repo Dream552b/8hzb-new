@@ -63,9 +63,9 @@
           class="flex items-center w-full"
           v-if="queryParams.sportsType === 1"
         >
-          <div class="flex items-center text-[#ff0000] shrink-0">
+          <div class="flex items-center text-[#3CCAC8] shrink-0">
             <img
-              class="w-[14px] h-[14px] ml-[1px]"
+              class="w-[14px] h-[14px] ml-[1px] mr-[4px]"
               src="@/assets/img-zuqiu.png"
               alt=""
               :class="{
@@ -74,6 +74,20 @@
                 )
               }"
             />
+            <span
+              v-if="
+                matchInfo.liveTime &&
+                FOOTBALL_STYLE_STATUS_ARR.find(s => s === matchInfo.matchStatus)
+              "
+            >
+              {{ getMinutesPassed(matchInfo)
+              }}{{
+                getMinutesPassed(matchInfo) === 46 ||
+                getMinutesPassed(matchInfo) === 90
+                  ? "+"
+                  : ""
+              }}<span>'</span>
+            </span>
           </div>
 
           <div
@@ -114,7 +128,7 @@
         >
           <div class="flex items-center text-[#3CCAC8] shrink-0">
             <img
-              class="w-[14px] h-[14px] ml-[1px]"
+              class="w-[14px] h-[14px] ml-[1px] mr-[4px]"
               src="@/assets/img-lanqiu.png"
               alt=""
               :class="{
@@ -123,6 +137,8 @@
                 )
               }"
             />
+
+            <div>{{ matchInfo.basketball_time }}</div>
           </div>
 
           <div class="flex flex-1 justify-center items-center leading-[16px]">
@@ -292,15 +308,12 @@ const handlanGetMatchInfo = async () => {
   const { data, code } = await getMatchInfo(params);
   if (code !== 200) return;
   let disData = onObjDisScore(data);
-  // 先清理
-  // originData.value = [];
-  videoOriginDis(disData);
 
   //测试主播
-  // disData.matchLiveInfo.anchorName = "123";
-  // disData.matchLiveInfo.playUrl =
+  // disData.pullurl1 =
   //   "https://playsz.juwangyun.cn/live/1710766791521.m3u8?timestamp=1710817220993";
-  // console.log("disData", disData);
+
+  videoOriginDis(disData);
 
   matchInfo.value = disData;
 
@@ -352,10 +365,11 @@ const videoOriginDis = disData => {
       };
       //测试
       // if (index === 0) {
-      //   obj.name = "8H主播";
+      //   obj.name = "高清1";
       //   // obj.url = "https://play.xshuijiu.cn/live/sd-2-3740249.m3u8";
       //   obj.url = "https://playcn.xshuijiu.cn/live/1711025367698.m3u8";
       // }
+
       originData.value.push(obj);
     }
   });
@@ -363,11 +377,14 @@ const videoOriginDis = disData => {
 
 // obj处理比分
 const onObjDisScore = dataObj => {
+  if (!dataObj.awayScores) return dataObj;
   const sum = dataObj.awayScores.reduce((acc, val) => acc + val, 0);
   const sumHome = dataObj.homeScores.reduce((acc, val) => acc + val, 0);
   dataObj.away_basketball_score = sum;
   dataObj.home_basketball_score = sumHome;
-  dataObj.basketball_time = secondsToMinutesAndSeconds(dataObj.liveTime);
+  if (dataObj.sportsType === 2) {
+    dataObj.basketball_time = secondsToMinutesAndSeconds(dataObj.liveTime);
+  }
   return dataObj;
 };
 

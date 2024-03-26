@@ -53,6 +53,13 @@
       v-if="isAppShow && !isAppOnePlay"
     ></div>
 
+    <img
+      v-if="isBackVideo"
+      class="w-[102] h-[40] absolute right-[2px] top-[2px]"
+      src="@/assets/img-shadwo.png"
+      alt=""
+    />
+
     <!-- 自定义状态栏 -->
     <div
       class="w-full h-[212px] absolute top-0 truncate"

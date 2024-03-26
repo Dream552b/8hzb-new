@@ -59,8 +59,8 @@ export default defineConfig(({ mode }) => {
       proxy: {
         "^/api": {
           // target: "http://192.168.3.32:9000", 
-          target: "https://hg.8hzb.com",
-          // target: "https://test.8hzb.chat",
+          // target: "https://hg.8hzb.com",
+          target: "https://test.8hzb.chat",
           // target: "https://8hzb.chat",
 
           changeOrigin: true,

@@ -73,8 +73,8 @@ onUnmounted(() => {
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 1"
       >
-        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
-          <img class="w-full h-full" :src="matchInfo.homeTeamLogo" alt="" />
+        <div class="w-[44px] h-[44px] mb-[7px]">
+          <img class="w-full" :src="matchInfo.homeTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.homeTeamName }}</div>
       </div>
@@ -83,12 +83,13 @@ onUnmounted(() => {
         class="w-[44px] text-[#fff] text-[10px] flex flex-col justify-center items-center"
         v-if="matchInfo.sportsType == 2"
       >
-        <div class="w-[44px] h-[44px] rounded-[50%] mb-[7px]">
-          <img class="w-full h-full" :src="matchInfo.awayTeamLogo" alt="" />
+        <div class="w-[44px] h-[44px] mb-[7px]">
+          <img class="w-full" :src="matchInfo.awayTeamLogo" alt="" />
         </div>
         <div class="van-ellipsis">{{ matchInfo.awayTeamName }}</div>
       </div>
 
+      <!-- 暂无视频源 -->
       <div
         class="text-[10px] text-[#fff] flex flex-col justify-center items-center mx-[47px]"
         v-if="
@@ -102,7 +103,34 @@ onUnmounted(() => {
               FOOTBALL_STYLE_STATUS_ARR.find(s => s === matchInfo.matchStatus)))
         "
       >
-        暂无视频源...
+        <div class="flex items-center shrink-0">
+          <span v-if="matchInfo.sportsType == 1">{{
+            FOOTBALL_TYPE[matchInfo.matchStatus]
+          }}</span>
+          <span v-else>{{ BASKETBALL_TYPE[matchInfo.matchStatus] }}</span>
+        </div>
+
+        <!-- 比分 -->
+        <div class="my-[4px]">
+          <div
+            class="flex items-center justify-center text-[22px] font-bold mx-[10px]"
+            v-if="matchInfo.sportsType == 1"
+          >
+            <span> {{ matchInfo.homeScores[0] }}</span>
+            <span class="mx-[6px]">:</span>
+            <span> {{ matchInfo.awayScores[0] }}</span>
+          </div>
+          <div
+            v-else
+            class="flex items-center justify-center text-[22px] font-bold mx-[6px]"
+          >
+            <span>{{ matchInfo.away_basketball_score }}</span>
+            <span class="mx-[6px]">:</span>
+            <span>{{ matchInfo.home_basketball_score }}</span>
+          </div>
+        </div>
+
+        <div>暂无视频源...</div>
       </div>
       <div
         v-else

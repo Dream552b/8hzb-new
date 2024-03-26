@@ -87,6 +87,8 @@
 <script setup>
 import TopNavBar from "@/components/TopNavBar/index.vue";
 import { ref, getCurrentInstance } from "vue";
+
+import { downloadLog } from "@/api/login";
 import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -98,23 +100,20 @@ const isShow = ref(proxy.$cache.session.get("from") || "");
 const isIphone = ref(false); // 是否苹果端
 
 const onDownload = () => {
+  onDownloadLog();
   // App 下载链接 安卓
   const appDownloadUrl =
     "https://image-1320074598.cos.accelerate.myqcloud.com/2024-03/88f1dda4e4fd30de40ee1f8e47f8b680.apk";
-
-  // location.href = appDownloadUrl;
-
   // 在新窗口中打开下载页面
   window.open(appDownloadUrl, "_blank");
 };
 
 const onDownloadIphone = () => {
+  onDownloadLog();
+
   // App 下载链接  苹果
   const appDownloadUrl =
     "https://shuqian.wangcaishuqian.com/webclip/single/aba50944";
-
-  // location.href = appDownloadUrl;
-
   // 在新窗口中打开下载页面
   setTimeout(() => {
     window.open(appDownloadUrl, "_blank");
@@ -126,18 +125,21 @@ function detectDevice() {
   const userAgent = window.navigator.userAgent.toLowerCase();
   if (/iphone|ipad|ipod/.test(userAgent)) {
     isIphone.value = true;
-    console.log("****");
-
     return "iOS";
   } else if (/android/.test(userAgent)) {
     isIphone.value = false;
-    console.log("123123");
-
     return "Android";
   } else {
     return "Unknown";
   }
 }
+
+const onDownloadLog = async () => {
+  let params = {
+    deviceType: detectDevice() == "iOS" ? 1 : 2
+  };
+  let { code, data } = await downloadLog(params);
+};
 
 // 调用 detectDevice 函数进行设备检测
 detectDevice();

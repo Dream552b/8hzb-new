@@ -33,3 +33,14 @@ export function getUserInfo(params) {
         params
     });
 }
+
+export function downloadLog(data) {
+    return http.request({
+        url: "/v2/downloadLog/create",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+    });
+}
